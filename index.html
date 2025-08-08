@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FarMovies - Movie Guessing Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Cinzel', serif;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            max-width: 100vw;
+            max-height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+        
+        #gameCanvas {
+            background: black;
+            display: block;
+            border-radius: 15px;
+            image-rendering: crisp-edges;
+        }
+        
+        #textInput {
+            position: absolute;
+            left: 50%;
+            bottom: 20%;
+            transform: translateX(-50%);
+            padding: 15px 20px;
+            font-size: 18px;
+            font-family: 'Cinzel', serif;
+            border: 3px solid #d4af37;
+            border-radius: 10px;
+            background: rgba(20, 20, 20, 0.95);
+            color: #d4af37;
+            width: 280px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            outline: none;
+        }
+        
+        #textInput::placeholder {
+            color: rgba(212, 175, 55, 0.6);
+        }
+        
+        #textInput:focus {
+            border-color: #ffd700;
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+        }
+        
+        #submitBtn {
+            position: absolute;
+            left: 50%;
+            bottom: 10%;
+            transform: translateX(-50%);
+            padding: 15px 40px;
+            font-size: 18px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            background: linear-gradient(145deg, #d4af37, #b8941f);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        #submitBtn:hover {
+            background: linear-gradient(145deg, #ffd700, #d4af37);
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+        }
+        
+        #submitBtn:active {
+            transform: translateX(-50%) translateY(-1px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+        }
+        
+        .message-box {
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            color: #d4af37;
+            font-size: 28px;
+            font-weight: 600;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 500px;
+        }
+        
+        .message-box.show {
+            transform: scale(1);
+        }
+        
+        .message-box h2 {
+            margin: 0 0 20px 0;
+            font-size: 36px;
+        }
+        
+        .message-box p {
+            margin: 10px 0;
+            font-size: 20px;
+            opacity: 0.8;
+        }
+        
+        .correct {
+            background: linear-gradient(145deg, #1a4f3a, #0d2818) !important;
+            border-color: #27ae60 !important;
+            color: #2ecc71 !important;
+        }
+        
+        .incorrect {
+            background: linear-gradient(145deg, #4a1a1a, #2d1010) !important;
+            border-color: #e74c3c !important;
+            color: #ff6b6b !important;
+        }
+        
+        .rules {
+            background: linear-gradient(145deg, #1a2a4a, #0f1a2d) !important;
+            border-color: #3498db !important;
+            color: #74b9ff !important;
+            font-size: 22px;
+        }
+        
+        .temp-message {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(231, 76, 60, 0.95);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .temp-message.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1000" height="1800"></canvas>
+        
+        <input type="text" id="textInput" placeholder="Guess the Movie Name" maxlength="50">
+        <button id="submitBtn">Continue</button>
+        
+        <div id="overlay" class="overlay">
+            <div id="messageBox" class="message-box">
+                <div id="messageText">Welcome to Movie Quest!</div>
+            </div>
+        </div>
+        
+        <div id="tempMessage" class="temp-message"></div>
+    </div>
+
+    <script>
+        class MovieGuessingGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.textInput = document.getElementById('textInput');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.overlay = document.getElementById('overlay');
+                this.messageBox = document.getElementById('messageBox');
+                this.messageText = document.getElementById('messageText');
+                this.tempMessage = document.getElementById('tempMessage');
+                
+                this.currentLevel = 0;
+                this.submittedAnswer = '';
+                this.maxWords = 5;
+                this.isGameActive = false;
+                
+                // Movie data from Lua code
+                this.movies = [
+                    { image: 'level/1.png', name: 'back to the future', nameNum: 4, hint: '' },
+                    { image: 'level/2.png', name: 'pulp fiction', nameNum: 2, hint: '' },
+                    { image: 'level/3.png', name: 'american psycho', nameNum: 2, hint: '' },
+                    { image: 'level/4.png', name: 'coming to america', nameNum: 3, hint: '' },
+                    { image: 'level/5.png', name: 'speed', nameNum: 1, hint: '' },
+                    { image: 'level/6.png', name: 'indiana jones', nameNum: 2, hint: '' },
+                    { image: 'level/7.png', name: 'the matrix', nameNum: 2, hint: '' },
+                    { image: 'level/8.png', name: 'forrest grump', nameNum: 2, hint: '' }
+                ];
+                
+                this.images = {};
+                this.audioContext = null;
+                this.sounds = {};
+                this.animations = [];
+                
+                this.init();
+            }
+            
+            async init() {
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.initAudio();
+                await this.preloadAssets();
+                this.showRules();
+                this.startAnimationLoop();
+            }
+            
+            setupCanvas() {
+                const updateCanvasSize = () => {
+                    const aspectRatio = 1000 / 1800;
+                    
+                    let width = Math.min(window.innerWidth * 0.9, 600);
+                    let height = width / aspectRatio;
+                    
+                    if (height > window.innerHeight * 0.9) {
+                        height = window.innerHeight * 0.9;
+                        width = height * aspectRatio;
+                    }
+                    
+                    this.canvas.style.width = width + 'px';
+                    this.canvas.style.height = height + 'px';
+                };
+                
+                updateCanvasSize();
+                window.addEventListener('resize', updateCanvasSize);
+            }
+            
+            setupEventListeners() {
+                // Text input validation
+                this.textInput.addEventListener('input', (e) => {
+                    const text = e.target.value;
+                    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+                    
+                    if (words.length > this.maxWords) {
+                        this.showTemporaryMessage('Too long! Please limit your answer to 5 words.');
+                        // Revert to previous valid input
+                        e.target.value = this.submittedAnswer;
+                    } else {
+                        this.submittedAnswer = text.toLowerCase().trim();
+                    }
+                });
+                
+                // Submit button with animation
+                this.submitBtn.addEventListener('click', () => this.handleSubmit());
+                
+                // Enter key submission
+                this.textInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleSubmit();
+                    }
+                });
+                
+                // Prevent zoom on mobile
+                this.textInput.addEventListener('focus', () => {
+                    if (window.innerWidth < 768) {
+                        this.textInput.style.fontSize = '16px'; // Prevents iOS zoom
+                    }
+                });
+            }
+            
+            initAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create Audio objects for sound files with error handling
+                    this.sounds.correct = new Audio();
+                    this.sounds.correct.src = 'soundfx/correct.mp3';
+                    this.sounds.correct.onerror = () => console.log('Could not load correct sound');
+                    this.sounds.correct.load();
+                    
+                    this.sounds.wrong = new Audio();
+                    this.sounds.wrong.src = 'soundfx/wrong.mp3';
+                    this.sounds.wrong.onerror = () => console.log('Could not load wrong sound');
+                    this.sounds.wrong.load();
+                    
+                    // Create synthesized sounds as functions
+                    this.sounds.select = () => this.playTone(800, 0.1, 'sine');
+                    this.sounds.win = () => this.playVictoryFanfare();
+                    
+                } catch (e) {
+                    console.log('Audio not supported:', e);
+                    // Create fallback empty functions
+                    this.sounds.correct = { play: () => {} };
+                    this.sounds.wrong = { play: () => {} };
+                    this.sounds.select = () => {};
+                    this.sounds.win = () => {};
+                }
+            }
+            
+            async preloadAssets() {
+                // Load actual movie images from folder
+                const loadPromises = this.movies.map((movie) => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            this.images[movie.image] = img;
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.warn(`Failed to load ${movie.image}, creating placeholder`);
+                            // Create placeholder if image fails to load
+                            this.createPlaceholderImage(movie);
+                            resolve();
+                        };
+                        img.src = movie.image;
+                    });
+                });
+                
+                // Wait for all images to load
+                await Promise.all(loadPromises);
+            }
+            
+            createPlaceholderImage(movie) {
+                // Fallback placeholder if image doesn't exist
+                const movieStyles = {
+                    'level/1.png': { bg: '#1a237e', accent: '#3f51b5', title: 'BACK TO\nTHE FUTURE' },
+                    'level/2.png': { bg: '#bf360c', accent: '#ff5722', title: 'PULP\nFICTION' },
+                    'level/3.png': { bg: '#263238', accent: '#607d8b', title: 'AMERICAN\nPSYCHO' },
+                    'level/4.png': { bg: '#4a148c', accent: '#9c27b0', title: 'COMING TO\nAMERICA' },
+                    'level/5.png': { bg: '#b71c1c', accent: '#f44336', title: 'SPEED' },
+                    'level/6.png': { bg: '#3e2723', accent: '#8d6e63', title: 'INDIANA\nJONES' },
+                    'level/7.png': { bg: '#0d47a1', accent: '#2196f3', title: 'THE\nMATRIX' },
+                    'level/8.png': { bg: '#1b5e20', accent: '#4caf50', title: 'FORREST\nGUMP' }
+                };
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 400;
+                const ctx = canvas.getContext('2d');
+                
+                const style = movieStyles[movie.image];
+                
+                // Create placeholder background
+                const gradient = ctx.createLinearGradient(0, 0, 400, 400);
+                gradient.addColorStop(0, style.bg);
+                gradient.addColorStop(1, this.darkenColor(style.bg, 30));
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 400, 400);
+                
+                // Add "IMAGE NOT FOUND" text
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 24px Cinzel, serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('IMAGE NOT FOUND', 200, 150);
+                
+                ctx.font = 'bold 20px Cinzel, serif';
+                const lines = style.title.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, 200, 220 + index * 25);
+                });
+                
+                this.images[movie.image] = canvas;
+            }
+            
+            darkenColor(color, percent) {
+                const num = parseInt(color.replace('#', ''), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = Math.max(0, (num >> 16) - amt);
+                const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+                const B = Math.max(0, (num & 0x0000FF) - amt);
+                return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+            }
+            
+            playTone(frequency, duration, type = 'sine') {
+                if (!this.audioContext) return;
+                
+                try {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+                    
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Error playing tone:', e);
+                }
+            }
+            
+            playChord(frequencies, duration) {
+                frequencies.forEach((freq, index) => {
+                    setTimeout(() => this.playTone(freq, duration * 0.8), index * 50);
+                });
+            }
+            
+            playVictoryFanfare() {
+                const melody = [523, 659, 784, 1047];
+                melody.forEach((freq, index) => {
+                    setTimeout(() => this.playTone(freq, 0.3), index * 200);
+                });
+            }
+            
+            startAnimationLoop() {
+                const animate = () => {
+                    this.updateAnimations();
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            
+            updateAnimations() {
+                this.animations = this.animations.filter(anim => {
+                    anim.update();
+                    return !anim.finished;
+                });
+            }
+            
+            addAnimation(animation) {
+                this.animations.push(animation);
+            }
+            
+            showRules() {
+                this.messageBox.className = 'message-box rules';
+                this.messageText.innerHTML = `
+                    <h2>🎬 Welcome to Movie Quest!</h2>
+                    <p>Guess the movie from the poster</p>
+                    <p>Good luck, movie buff! 🍿</p>
+                `;
+                this.showOverlay();
+                
+                setTimeout(() => {
+                    this.hideOverlay();
+                    setTimeout(() => this.startGame(), 500);
+                }, 3000);
+            }
+            
+            startGame() {
+                this.isGameActive = true;
+                this.drawCurrentLevel();
+                setTimeout(() => this.showTextField(), 1000);
+            }
+            
+            drawCurrentLevel() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background gradient
+                const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+                gradient.addColorStop(0, '#0f0f0f');
+                gradient.addColorStop(1, '#1a1a1a');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                if (this.currentLevel < this.movies.length) {
+                    const movie = this.movies[this.currentLevel];
+                    const image = this.images[movie.image];
+                    
+                    if (image) {
+                        // Calculate dimensions to fit the full width with proper aspect ratio
+                        const canvasWidth = this.canvas.width;
+                        const canvasHeight = this.canvas.height;
+                        const padding = 40; // Padding from edges
+                        const availableWidth = canvasWidth - (padding * 2);
+                        const availableHeight = canvasHeight * 0.6; // Use 60% of canvas height for image
+                        
+                        let displayWidth, displayHeight, x, y;
+                        
+                        // Get original dimensions
+                        const originalWidth = image.width || image.naturalWidth;
+                        const originalHeight = image.height || image.naturalHeight;
+                        const imageAspectRatio = originalWidth / originalHeight;
+                        
+                        // Scale to fit available width while maintaining aspect ratio
+                        displayWidth = availableWidth;
+                        displayHeight = displayWidth / imageAspectRatio;
+                        
+                        // If height exceeds available space, scale by height instead
+                        if (displayHeight > availableHeight) {
+                            displayHeight = availableHeight;
+                            displayWidth = displayHeight * imageAspectRatio;
+                        }
+                        
+                        // Center the image
+                        x = (canvasWidth - displayWidth) / 2;
+                        y = 150; // Start position from top, leaving space for level text
+                        
+                        // Add drop shadow
+                        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                        this.ctx.shadowOffsetX = 10;
+                        this.ctx.shadowOffsetY = 10;
+                        this.ctx.shadowBlur = 20;
+                        
+                        this.ctx.drawImage(image, x, y, displayWidth, displayHeight);
+                        
+                        // Reset shadow
+                        this.ctx.shadowColor = 'transparent';
+                        
+                        // Add level indicator at the top
+                        this.ctx.fillStyle = '#d4af37';
+                        this.ctx.font = 'bold 32px Cinzel, serif';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.fillText(`Level ${this.currentLevel + 1} of ${this.movies.length}`, 
+                                        canvasWidth / 2, 80);
+                        
+                        // Add a subtle border around the image
+                        this.ctx.strokeStyle = '#d4af37';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.strokeRect(x - 2, y - 2, displayWidth + 4, displayHeight + 4);
+                    }
+                }
+            }
+            
+            showTextField() {
+                this.textInput.style.display = 'block';
+                this.submitBtn.style.display = 'block';
+                this.textInput.value = '';
+                this.textInput.focus();
+                this.submittedAnswer = '';
+                
+                // Add entrance animation
+                this.textInput.style.transform = 'translateX(-50%) translateY(20px)';
+                this.textInput.style.opacity = '0';
+                this.submitBtn.style.transform = 'translateX(-50%) translateY(20px)';
+                this.submitBtn.style.opacity = '0';
+                
+                setTimeout(() => {
+                    this.textInput.style.transition = 'all 0.3s ease';
+                    this.textInput.style.transform = 'translateX(-50%) translateY(0)';
+                    this.textInput.style.opacity = '1';
+                    
+                    this.submitBtn.style.transition = 'all 0.3s ease';
+                    this.submitBtn.style.transform = 'translateX(-50%) translateY(0)';
+                    this.submitBtn.style.opacity = '1';
+                }, 100);
+            }
+            
+            hideTextField() {
+                this.textInput.style.transition = 'all 0.3s ease';
+                this.textInput.style.transform = 'translateX(-50%) translateY(20px)';
+                this.textInput.style.opacity = '0';
+                
+                this.submitBtn.style.transition = 'all 0.3s ease';
+                this.submitBtn.style.transform = 'translateX(-50%) translateY(20px)';
+                this.submitBtn.style.opacity = '0';
+                
+                setTimeout(() => {
+                    this.textInput.style.display = 'none';
+                    this.submitBtn.style.display = 'none';
+                }, 300);
+            }
+            
+            handleSubmit() {
+                if (!this.submittedAnswer.trim()) {
+                    this.showTemporaryMessage('Please enter an answer!');
+                    return;
+                }
+                
+                if (typeof this.sounds.select === 'function') {
+                    this.sounds.select();
+                }
+                
+                // Button press animation
+                this.submitBtn.style.transform = 'translateX(-50%) scale(0.95)';
+                setTimeout(() => {
+                    this.submitBtn.style.transform = 'translateX(-50%) scale(1)';
+                }, 150);
+                
+                this.hideTextField();
+                
+                setTimeout(() => {
+                    const currentMovie = this.movies[this.currentLevel];
+                    const isCorrect = this.submittedAnswer === currentMovie.name;
+                    
+                    if (isCorrect) {
+                        try {
+                            this.sounds.correct.play().catch(e => console.log('Could not play correct sound'));
+                        } catch (e) {
+                            console.log('Error playing correct sound:', e);
+                        }
+                        this.showCorrectMessage();
+                    } else {
+                        try {
+                            this.sounds.wrong.play().catch(e => console.log('Could not play wrong sound'));
+                        } catch (e) {
+                            console.log('Error playing wrong sound:', e);
+                        }
+                        this.showIncorrectMessage();
+                    }
+                }, 400);
+            }
+            
+            showCorrectMessage() {
+                this.messageBox.className = 'message-box correct';
+                this.messageText.innerHTML = '<h2>🎉 Correct!</h2><p>Well done! Moving to next level...</p>';
+                this.showOverlay();
+                
+                setTimeout(() => {
+                    this.hideOverlay();
+                    setTimeout(() => this.nextLevel(), 400);
+                }, 2000);
+            }
+            
+            showIncorrectMessage() {
+                const correctAnswer = this.movies[this.currentLevel].name.toUpperCase();
+                this.messageBox.className = 'message-box incorrect';
+                this.messageText.innerHTML = `
+                    <h2>❌ Incorrect!</h2>
+                    <p>Try again!</p>
+                `;
+                this.showOverlay();
+                
+                setTimeout(() => {
+                    this.hideOverlay();
+                    setTimeout(() => this.showTextField(), 400);
+                }, 2500);
+            }
+            
+            nextLevel() {
+                this.currentLevel++;
+                
+                if (this.currentLevel >= this.movies.length) {
+                    this.showGameComplete();
+                } else {
+                    this.drawCurrentLevel();
+                    setTimeout(() => this.showTextField(), 1000);
+                }
+            }
+            
+            showGameComplete() {
+                if (typeof this.sounds.win === 'function') {
+                    this.sounds.win();
+                }
+                this.messageBox.className = 'message-box correct';
+                this.messageText.innerHTML = `
+                    <h2>🏆 Congratulations!</h2>
+                    <p>You've completed all ${this.movies.length} levels!</p>
+                    <p>You're a true movie expert! 🎬</p>
+                    <p style="margin-top: 30px; font-size: 16px; opacity: 0.7;">
+                        Refresh to play again
+                    </p>
+                `;
+                this.showOverlay();
+                this.isGameActive = false;
+                
+                // Add confetti effect
+                this.addConfettiEffect();
+            }
+            
+            addConfettiEffect() {
+                const colors = ['#d4af37', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'];
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.style.position = 'absolute';
+                        confetti.style.width = '10px';
+                        confetti.style.height = '10px';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.top = '-10px';
+                        confetti.style.borderRadius = '50%';
+                        confetti.style.pointerEvents = 'none';
+                        confetti.style.zIndex = '1001';
+                        
+                        document.getElementById('gameContainer').appendChild(confetti);
+                        
+                        // Animate falling
+                        confetti.style.transition = 'all 3s ease-in';
+                        setTimeout(() => {
+                            confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(720deg)`;
+                            confetti.style.opacity = '0';
+                        }, 100);
+                        
+                        // Remove after animation
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 3200);
+                    }, i * 100);
+                }
+            }
+            
+            showOverlay() {
+                this.overlay.style.display = 'flex';
+                setTimeout(() => {
+                    this.messageBox.classList.add('show');
+                }, 100);
+            }
+            
+            hideOverlay() {
+                this.messageBox.classList.remove('show');
+                setTimeout(() => {
+                    this.overlay.style.display = 'none';
+                }, 400);
+            }
+            
+            showTemporaryMessage(message) {
+                this.tempMessage.textContent = message;
+                this.tempMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    this.tempMessage.classList.remove('show');
+                }, 2000);
+            }
+        }
+        
+        // Start the game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new MovieGuessingGame();
+        });
+        
+        // Enable audio context on first user interaction (required by browsers)
+        document.addEventListener('click', function enableAudio() {
+            if (window.game && window.game.audioContext && window.game.audioContext.state === 'suspended') {
+                window.game.audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
