@@ -349,15 +349,73 @@
                 this.init();
             }
             
+            //async init() {
+                //this.setupCanvas();
+                //this.setupEventListeners();
+                //this.initAudio();
+                //this.selectRandomMovies();
+                //await this.preloadAssets();
+                //this.showMenu();
+                //this.startAnimationLoop();
+            //}
+
             async init() {
                 this.setupCanvas();
                 this.setupEventListeners();
                 this.initAudio();
                 this.selectRandomMovies();
                 await this.preloadAssets();
+
+                const fidValue = new URLSearchParams(window.location.search).get("fid");
+
+                if (!fidValue) {
+                    console.warn("⚠ No FID found, continuing without wallet address...");
+                } else {
+                    const logResult = await this.logURL(fidValue);
+                    if (!logResult.success) {
+                        console.warn("⚠ Failed to log FID, continuing anyway...");
+                    }
+
+                    // Try to get ETH address linked to this FID
+                    try {
+                        const url = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidValue}`;
+                        const res = await fetch(url, {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-api-key": "28AE94E4-4E84-4985-B965-6D5463DCE6CB",
+                                "x-neynar-experimental": "false"
+                            }
+                        });
+
+                        if (res.ok) {
+                            const result = await res.json();
+                            if (
+                                result &&
+                                result.users &&
+                                result.users.length > 0 &&
+                                result.users[0].verified_addresses &&
+                                result.users[0].verified_addresses.eth_addresses &&
+                                result.users[0].verified_addresses.eth_addresses.length > 0
+                            ) {
+                                this.playerAddress = result.users[0].verified_addresses.eth_addresses[0];
+                                console.log("✅ ETH Address from FID:", this.playerAddress);
+                            } else {
+                                console.warn("ℹ️ No ETH address linked to FID");
+                            }
+                        } else {
+                            console.error("❌ Neynar API request failed with status", res.status);
+                        }
+                    } catch (err) {
+                        console.error("❌ Error fetching ETH address:", err);
+                    }
+                }
+
                 this.showMenu();
                 this.startAnimationLoop();
             }
+
+
 
             showMenu() {
                 const menuOverlay = document.createElement('div');
@@ -1086,47 +1144,49 @@
                 btnContainer.style.gap = '20px';
                 btnContainer.style.marginTop = '20px';
 
-            const mintBtn = document.createElement('button');
-            mintBtn.textContent = 'Mint';
-            mintBtn.style.padding = '12px 24px';
-            mintBtn.style.backgroundColor = '#28a745';
-            mintBtn.style.color = '#fff';
-            mintBtn.style.border = 'none';
-            mintBtn.style.borderRadius = '8px';
-            mintBtn.style.fontSize = '16px';
-            mintBtn.style.cursor = 'pointer';
+               const mintBtn = document.createElement('button');
+                mintBtn.textContent = 'Mint';
+                mintBtn.style.padding = '12px 24px';
+                mintBtn.style.backgroundColor = '#28a745';
+                mintBtn.style.color = '#fff';
+                mintBtn.style.border = 'none';
+                mintBtn.style.borderRadius = '8px';
+                mintBtn.style.fontSize = '16px';
+                mintBtn.style.cursor = 'pointer';
 
-            mintBtn.onclick = async () => {
-                const walletAddress = '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
+                mintBtn.onclick = async () => {
+                    // Use player's ETH address if available, otherwise default
+                    const walletAddress = this.playerAddress || '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
 
-                mintBtn.disabled = true;
-                mintBtn.textContent = 'Minting... ⏳';
+                    mintBtn.disabled = true;
+                    mintBtn.textContent = 'Minting... ⏳';
 
-                try {
-                    const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ address: walletAddress, quantity: 1 })
-                    });
+                    try {
+                        const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ address: walletAddress, quantity: 1 })
+                        });
 
-                    const data = await res.json();
+                        const data = await res.json();
 
-                    if (res.ok && data.success) {
-                        alert(`✅ Mint Successful!\nWallet: ${walletAddress}\nTx Hash: ${data.txHash}`);
-                        mintBtn.style.display = 'none'; // Hide button after success
-                    } else {
-                        throw new Error(data.error || 'Mint failed');
+                        if (res.ok && data.success) {
+                            alert(`✅ Mint Successful!\nWallet: ${walletAddress}\nTx Hash: ${data.txHash}`);
+                            mintBtn.style.display = 'none'; // Hide button after success
+                        } else {
+                            throw new Error(data.error || 'Mint failed');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert(`❌ Mint failed: ${err.message}`);
+                    } finally {
+                        if (mintBtn.style.display !== 'none') { // Only reset if not hidden
+                            mintBtn.disabled = false;
+                            mintBtn.textContent = 'Mint';
+                        }
                     }
-                } catch (err) {
-                    console.error(err);
-                    alert(`❌ Mint failed: ${err.message}`);
-                } finally {
-                    if (mintBtn.style.display !== 'none') { // Only reset if not hidden
-                        mintBtn.disabled = false;
-                        mintBtn.textContent = 'Mint';
-                    }
-                }
-            };
+                };
+
 
 
                 const restartBtn = document.createElement('button');
