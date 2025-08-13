@@ -33,64 +33,73 @@
             image-rendering: crisp-edges;
         }
         
-        #textInput {
+        #buttonContainer {
             position: absolute;
             left: 50%;
-            bottom: 20%;
+            bottom: 15%;
             transform: translateX(-50%);
-            padding: 15px 20px;
-            font-size: 18px;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            border: 3px solid #d4af37;
-            border-radius: 10px;
-            background: rgba(20, 20, 20, 0.95);
-            color: #d4af37;
-            width: 280px;
-            text-align: center;
             display: none;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-            outline: none;
+            flex-wrap: wrap; /* allow wrapping */
+            gap: 12px;
+            width: 340px; /* slightly wider to fit two buttons */
+            justify-content: center;
         }
-        
-        #textInput::placeholder {
-            color: rgba(212, 175, 55, 0.6);
-        }
-        
-        #textInput:focus {
-            border-color: #ffd700;
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
-        }
-        
-        #submitBtn {
-            position: absolute;
-            left: 50%;
-            bottom: 10%;
-            transform: translateX(-50%);
-            padding: 15px 40px;
-            font-size: 18px;
+
+        .choice-button {
+            flex: 1 1 calc(50% - 12px); /* 2 per row, accounting for gap */
+            padding: 12px 10px;
+            font-size: 14px;
             font-family: 'Georgia', 'Times New Roman', serif;
             font-weight: 600;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .choice-button:hover {
             background: linear-gradient(145deg, #d4af37, #b8941f);
             color: #000;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-            transition: all 0.3s ease;
-            display: none;
+        }
+
+        .choice-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .choice-button.correct-answer {
+            animation: correctPulse 0.6s ease-in-out;
+        }
+
+        .choice-button.wrong-answer {
+            animation: wrongShake 0.6s ease-in-out;
+        }
+
+        
+        @keyframes correctPulse {
+            0% { background: linear-gradient(145deg, #2c2c2c, #1a1a1a); }
+            50% { background: linear-gradient(145deg, #27ae60, #1e8449); transform: scale(1.05); }
+            100% { background: linear-gradient(145deg, #2c2c2c, #1a1a1a); }
         }
         
-        #submitBtn:hover {
-            background: linear-gradient(145deg, #ffd700, #d4af37);
-            transform: translateX(-50%) translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
-        }
-        
-        #submitBtn:active {
-            transform: translateX(-50%) translateY(-1px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        @keyframes wrongShake {
+            0% { background: linear-gradient(145deg, #2c2c2c, #1a1a1a); }
+            25% { background: linear-gradient(145deg, #e74c3c, #c0392b); transform: translateX(-5px); }
+            50% { background: linear-gradient(145deg, #e74c3c, #c0392b); transform: translateX(5px); }
+            75% { background: linear-gradient(145deg, #e74c3c, #c0392b); transform: translateX(-5px); }
+            100% { background: linear-gradient(145deg, #2c2c2c, #1a1a1a); transform: translateX(0); }
         }
         
         .overlay {
@@ -182,13 +191,13 @@
             left: 10px;
             background: rgba(20, 20, 20, 0.85);
             color: #d4af37;
-            padding: 6px 10px; /* smaller padding */
+            padding: 6px 10px;
             border-radius: 8px;
-            border: 1px solid #d4af37; /* thinner border */
+            border: 1px solid #d4af37;
             font-family: 'Georgia', 'Times New Roman', serif;
             font-weight: 600;
-            font-size: 14px; /* smaller text */
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25); /* softer shadow */
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
         }
 
     </style>
@@ -201,8 +210,12 @@
             Score: <span id="currentScore">0</span>
         </div>
         
-        <input type="text" id="textInput" placeholder="Guess the Movie Name" maxlength="50">
-        <button id="submitBtn">Continue</button>
+        <div id="buttonContainer">
+            <button class="choice-button" data-choice="0"></button>
+            <button class="choice-button" data-choice="1"></button>
+            <button class="choice-button" data-choice="2"></button>
+            <button class="choice-button" data-choice="3"></button>
+        </div>
         
         <div id="overlay" class="overlay">
             <div id="messageBox" class="message-box">
@@ -218,20 +231,20 @@
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.textInput = document.getElementById('textInput');
-                this.submitBtn = document.getElementById('submitBtn');
+                this.buttonContainer = document.getElementById('buttonContainer');
+                this.choiceButtons = document.querySelectorAll('.choice-button');
                 this.overlay = document.getElementById('overlay');
                 this.messageBox = document.getElementById('messageBox');
                 this.messageText = document.getElementById('messageText');
                 this.tempMessage = document.getElementById('tempMessage');
                 this.scoreDisplay = document.getElementById('currentScore');
-                this.remainingAttempts = 3;
+                this.remainingAttempts = 2;
 
                 this.currentLevel = 0;
-                this.submittedAnswer = '';
-                this.maxWords = 7;
+                this.correctButtonIndex = 0;
                 this.isGameActive = false;
                 this.totalRounds = 20;
+                this.buttonsDisabled = false;
 
                 this.timeRemaining = 30;
                 this.levelTimer = null;
@@ -246,90 +259,86 @@
                 
                 // Complete movie database with names for all 83 movies
                 this.allMovies = [
-                    { image: 'level/1.jpg', name: 'back to the future', challenge: 'Easy' },
-                    { image: 'level/2.jpg', name: 'gone with the wind', challenge: 'Normal' },
-                    { image: 'level/3.jpg', name: 'clockwork orange', challenge: 'Easy' },
-                    { image: 'level/4.jpg', name: 'departed', challenge: 'Normal' },
-                    { image: 'level/5.jpg', name: 'stand by me', challenge: 'Hard' },
-                    { image: 'level/6.jpg', name: 'lawrence of arabia', challenge: 'Normal' },
-                    { image: 'level/7.jpg', name: '12 angry men', challenge: 'Normal' },
-                    { image: 'level/8.jpg', name: 'birdman', challenge: 'Hard' },
-                    { image: 'level/9.jpg', name: 'apocalypse now', challenge: 'Normal' },
-                    { image: 'level/10.jpg', name: 'sixth sense', challenge: 'Normal' },
-                    { image: 'level/11.jpg', name: 'some like it hot', challenge: 'Hard' },
-                    { image: 'level/12.jpg', name: 'the lives of others', challenge: 'Hard' },
-                    { image: 'level/13.jpg', name: 'lalaland', challenge: 'Hard' },
-                    { image: 'level/14.jpg', name: 'schindlers list', challenge: 'Normal' },
-                    { image: 'level/15.jpg', name: 'everything everywhere all at once', challenge: 'Normal' },
-                    { image: 'level/16.jpg', name: 'oppenheimer', challenge: 'Easy' },
-                    { image: 'level/17.jpg', name: 'spirited away', challenge: 'Easy' },
-                    { image: 'level/18.jpg', name: 'matrix', challenge: 'Easy' },
-                    { image: 'level/19.jpg', name: 'ex machina', challenge: 'Easy' },
-                    { image: 'level/20.jpg', name: 'blade runner', challenge: 'Normal' },
-                    { image: 'level/21.jpg', name: 'when harry met sally', challenge: 'Normal' },
-                    { image: 'level/22.jpg', name: 'jurassic park', challenge: 'Normal' },
-                    { image: 'level/23.jpg', name: 'top gun', challenge: 'Easy' },
-                    { image: 'level/24.jpg', name: 'the shining', challenge: 'Easy' },
-                    { image: 'level/25.jpg', name: 'et', challenge: 'Easy' },
-                    { image: 'level/26.jpg', name: 'indiana jones', challenge: 'Easy' },
-                    { image: 'level/27.jpg', name: '10 things i hate about you', challenge: 'Normal' },
-                    { image: 'level/28.jpg', name: 'inception', challenge: 'Normal' },
-                    { image: 'level/29.jpg', name: 'zone of interest', challenge: 'Hard' },
-                    { image: 'level/30.jpg', name: 'inside out', challenge: 'Easy' },
-                    { image: 'level/31.jpg', name: 'goonies', challenge: 'Normal' },
-                    { image: 'level/32.jpg', name: 'notting hill', challenge: 'Hard' },
-                    { image: 'level/33.jpg', name: 'ace ventura', challenge: 'Easy' },
-                    { image: 'level/34.jpg', name: 'rear window', challenge: 'Hard' },
-                    { image: 'level/35.jpg', name: 'guardians of the galaxy', challenge: 'Easy' },
-                    { image: 'level/36.jpg', name: 'anchorman', challenge: 'Easy' },
-                    { image: 'level/37.jpg', name: 'step brothers', challenge: 'Normal' },
-                    { image: 'level/38.jpg', name: 'arrival', challenge: 'Normal' },
-                    { image: 'level/39.jpg', name: 'wall e', challenge: 'Easy' },
-                    { image: 'level/40.jpg', name: 'the breakfast club', challenge: 'Normal' },
-                    { image: 'level/41.jpg', name: 'brazil', challenge: 'V. Hard' },
-                    { image: 'level/42.jpg', name: 'barbie', challenge: 'Easy' },
-                    { image: 'level/43.jpg', name: 'braveheart', challenge: 'Easy' },
-                    { image: 'level/44.jpg', name: 'se7en', challenge: 'Normal' },
-                    { image: 'level/45.jpg', name: 'terminator', challenge: 'Normal' },
-                    { image: 'level/46.jpg', name: 'good will hunting', challenge: 'Normal' },
-                    { image: 'level/47.jpg', name: 'pan\'s labyrinth', challenge: 'Normal' },
-                    { image: 'level/48.jpg', name: 'point break', challenge: 'Normal' },
-                    { image: 'level/49.jpg', name: 'truman show', challenge: 'Normal' },
-                    { image: 'level/50.jpg', name: 'silence of the lambs', challenge: 'Easy' },
-                    { image: 'level/51.jpg', name: 'the fifth element', challenge: 'Normal' },
-                    { image: 'level/52.jpg', name: 'american beauty', challenge: 'Normal' },
-                    { image: 'level/53.jpg', name: 'napoleon dynamite', challenge: 'Normal' },
-                    { image: 'level/54.jpg', name: 'dune', challenge: 'Easy' },
-                    { image: 'level/55.jpg', name: 'north by northwest', challenge: 'Hard' },
-                    { image: 'level/56.jpg', name: 'scent of a woman', challenge: 'Hard' },
-                    { image: 'level/57.jpg', name: 'dog day afternoon', challenge: 'Hard' },
-                    { image: 'level/58.jpg', name: 'lion king', challenge: 'V. Easy' },
-                    { image: 'level/59.jpg', name: 'whiplash', challenge: 'Normal' },
-                    { image: 'level/60.jpg', name: 'coco', challenge: 'Normal' },
-                    { image: 'level/61.jpg', name: 'the green mile', challenge: 'Easy' },
-                    { image: 'level/62.jpg', name: 'reservoir dogs', challenge: 'Normal' },
-                    { image: 'level/63.jpg', name: 'seven samurai', challenge: 'Hard' },
-                    { image: 'level/64.jpg', name: 'princess bride', challenge: 'Easy' },
-                    { image: 'level/65.jpg', name: 'say anything', challenge: 'Hard' },
-                    { image: 'level/66.jpg', name: 'drive', challenge: 'Hard' },
-                    { image: 'level/67.jpg', name: 'nightcrawler', challenge: 'Normal' },
-                    { image: 'level/68.jpg', name: 'amelie', challenge: 'Normal' },
-                    { image: 'level/69.jpg', name: 'the big lebowski', challenge: 'Easy' },
-                    { image: 'level/70.jpg', name: 'citizen kane', challenge: 'Hard' },
-                    { image: 'level/71.jpg', name: 'fight club', challenge: 'Normal' },
-                    { image: 'level/72.jpg', name: 'forrest gump', challenge: 'Normal' },
-                    { image: 'level/73.jpg', name: 'no country for old men', challenge: 'Normal' },
-                   // { image: 'level/74.jpg', name: 'predator', challenge: 'Normal' },
-                   // { image: 'level/75.jpg', name: 'they live', challenge: 'Normal' },
-                    //{ image: 'level/76.jpg', name: 'nope', challenge: 'Normal' },
-                   // { image: 'level/77.jpg', name: 'akira', challenge: 'Normal' },
-                   // { image: 'level/78.jpg', name: 'green knight', challenge: 'Normal' },
-                    { image: 'level/79.jpg', name: 'pulp fiction', challenge: 'Normal' },
-                    { image: 'level/80.jpg', name: 'american psycho', challenge: 'Normal' },
-                    { image: 'level/81.jpg', name: 'coming to america', challenge: 'Normal' },
-                    { image: 'level/82.jpg', name: 'indiana jones', challenge: 'Normal' },
-                    { image: 'level/83.jpg', name: 'matrix', challenge: 'Normal' }
-                ];
+                  { image: "level/1.jpg", name: "back to the future", challenge: "Easy", alts: ["Bill & Ted’s Excellent Adventure", "The Time Machine", "The Terminator"], clue: "88 mph and a gull-wing car." },
+                  { image: "level/2.jpg", name: "gone with the wind", challenge: "Normal", alts: ["The Wizard of Oz", "Casablanca", "The Grapes of Wrath"], clue: "A Southern plantation romance set against the Civil War." },
+                  { image: "level/3.jpg", name: "clockwork orange", challenge: "Easy", alts: ["2001: A Space Odyssey", "The Shining", "Brazil"], clue: "Droogs, “milk-plus,” and Beethoven." },
+                  { image: "level/4.jpg", name: "departed", challenge: "Normal", alts: ["Goodfellas", "Infernal Affairs", "The Town"], clue: "Boston cops and mobsters with a rat on a balcony." },
+                  { image: "level/5.jpg", name: "stand by me", challenge: "Hard", alts: ["The Sandlot", "The Goonies", "Now and Then"], clue: "A trek along railroad tracks to find a body." },
+                  { image: "level/6.jpg", name: "lawrence of arabia", challenge: "Normal", alts: ["The Bridge on the River Kwai", "Doctor Zhivago", "The English Patient"], clue: "Mirage heat and a lone figure in white across the desert." },
+                  { image: "level/7.jpg", name: "12 angry men", challenge: "Normal", alts: ["Anatomy of a Murder", "The Verdict", "A Few Good Men"], clue: "One room, one jury, one stubborn holdout." },
+                  { image: "level/8.jpg", name: "birdman", challenge: "Hard", alts: ["Black Swan", "The Wrestler", "Adaptation"], clue: "A continuous-shot illusion backstage on Broadway." },
+                  { image: "level/9.jpg", name: "apocalypse now", challenge: "Normal", alts: ["Platoon", "Full Metal Jacket", "The Deer Hunter"], clue: "Helicopters blasting “Ride of the Valkyries.”" },
+                  { image: "level/10.jpg", name: "sixth sense", challenge: "Normal", alts: ["The Others", "Stir of Echoes", "The Ring"], clue: "A child confides, “I see them.”" },
+                  { image: "level/11.jpg", name: "some like it hot", challenge: "Hard", alts: ["The Apartment", "Gentlemen Prefer Blondes", "Singin’ in the Rain"], clue: "Two musicians in drag hide from gangsters." },
+                  { image: "level/12.jpg", name: "the lives of others", challenge: "Hard", alts: ["The Conversation", "Tinker Tailor Soldier Spy", "Bridge of Spies"], clue: "Stasi wiretaps and a playwright under surveillance." },
+                  { image: "level/13.jpg", name: "lalaland", challenge: "Hard", alts: ["The Artist", "Singin’ in the Rain", "Whiplash"], clue: "A jazz pianist and an actress chase dreams in LA." },
+                  { image: "level/14.jpg", name: "schindlers list", challenge: "Normal", alts: ["The Pianist", "Life Is Beautiful", "Son of Saul"], clue: "A red coat stands out in a black-and-white world." },
+                  { image: "level/15.jpg", name: "everything everywhere all at once", challenge: "Normal", alts: ["The Matrix", "Swiss Army Man", "Doctor Strange"], clue: "A bagel-shaped void and multiverse whiplash." },
+                  { image: "level/16.jpg", name: "oppenheimer", challenge: "Easy", alts: ["The Imitation Game", "The Theory of Everything", "Fat Man and Little Boy"], clue: "Manhattan Project genius faces an inquest." },
+                  { image: "level/17.jpg", name: "spirited away", challenge: "Easy", alts: ["Howl’s Moving Castle", "My Neighbor Totoro", "Princess Mononoke"], clue: "A bathhouse for spirits and a masked guest." },
+                  { image: "level/18.jpg", name: "matrix", challenge: "Easy", alts: ["Dark City", "Equilibrium", "Inception"], clue: "Red pill, blue pill, rain of green code." },
+                  { image: "level/19.jpg", name: "ex machina", challenge: "Easy", alts: ["Her", "A.I. Artificial Intelligence", "Blade Runner 2049"], clue: "A Turing test in a secluded glass house." },
+                  { image: "level/20.jpg", name: "blade runner", challenge: "Normal", alts: ["Blade Runner 2049", "Ghost in the Shell", "Dark City"], clue: "Neon rain, off-world ads, and replicants." },
+                  { image: "level/21.jpg", name: "when harry met sally", challenge: "Normal", alts: ["Sleepless in Seattle", "You’ve Got Mail", "Notting Hill"], clue: "Debating whether friends can stay just friends." },
+                  { image: "level/22.jpg", name: "jurassic park", challenge: "Normal", alts: ["The Lost World: Jurassic Park", "King Kong", "Godzilla (1998)"], clue: "Water ripples in a cup before the thunderous step." },
+                  { image: "level/23.jpg", name: "top gun", challenge: "Easy", alts: ["Top Gun: Maverick", "Iron Eagle", "Days of Thunder"], clue: "Navy fighter school and a beach volleyball break." },
+                  { image: "level/24.jpg", name: "the shining", challenge: "Easy", alts: ["Doctor Sleep", "Rosemary’s Baby", "The Exorcist"], clue: "Overlook Hotel hallways, a tricycle, and Room 237." },
+                  { image: "level/25.jpg", name: "et", challenge: "Easy", alts: ["Close Encounters of the Third Kind", "The Iron Giant", "Flight of the Navigator"], clue: "A bike silhouette crossing the moon." },
+                  { image: "level/26.jpg", name: "indiana jones", challenge: "Easy", alts: ["The Mummy", "Romancing the Stone", "National Treasure"], clue: "Fedora, bullwhip, and a rolling boulder." },
+                  { image: "level/27.jpg", name: "10 things i hate about you", challenge: "Normal", alts: ["Clueless", "She’s All That", "Mean Girls"], clue: "Shakespeare’s “Shrew,” reimagined in high school." },
+                  { image: "level/28.jpg", name: "inception", challenge: "Normal", alts: ["Tenet", "The Matrix", "Shutter Island"], clue: "A spinning top that may never fall." },
+                  { image: "level/29.jpg", name: "zone of interest", challenge: "Hard", alts: ["Schindler’s List", "The Pianist", "Son of Saul"], clue: "A quiet domestic garden beside an unseen atrocity." },
+                  { image: "level/30.jpg", name: "inside out", challenge: "Easy", alts: ["Soul", "Up", "Coco"], clue: "Emotions run HQ inside a kid’s head." },
+                  { image: "level/31.jpg", name: "goonies", challenge: "Normal", alts: ["Stand by Me", "The Monster Squad", "Explorers"], clue: "A treasure map to One-Eyed Willy’s riches." },
+                  { image: "level/32.jpg", name: "notting hill", challenge: "Hard", alts: ["Four Weddings and a Funeral", "Love Actually", "Bridget Jones’s Diary"], clue: "“I’m just a girl…” in a cozy London bookshop." },
+                  { image: "level/33.jpg", name: "ace ventura", challenge: "Easy", alts: ["Dumb and Dumber", "The Mask", "Liar Liar"], clue: "A pet detective hunts a missing dolphin." },
+                  { image: "level/34.jpg", name: "rear window", challenge: "Hard", alts: ["Vertigo", "Disturbia", "The Girl on the Train"], clue: "A photographer, a cast, and suspicious neighbors." },
+                  { image: "level/35.jpg", name: "guardians of the galaxy", challenge: "Easy", alts: ["Thor: Ragnarok", "Star Trek (2009)", "The Fifth Element"], clue: "A mixtape, a tree, and a very talkative raccoon." },
+                  { image: "level/36.jpg", name: "anchorman", challenge: "Easy", alts: ["Talladega Nights", "Step Brothers", "Zoolander"], clue: "“Stay classy,” San Diego evening news." },
+                  { image: "level/37.jpg", name: "step brothers", challenge: "Normal", alts: ["The Other Guys", "Dumb and Dumber", "Pineapple Express"], clue: "Two man-children build “more room for activities.”" },
+                  { image: "level/38.jpg", name: "arrival", challenge: "Normal", alts: ["Contact", "Interstellar", "Annihilation"], clue: "Heptapod logograms change how time is felt." },
+                  { image: "level/39.jpg", name: "wall e", challenge: "Easy", alts: ["The Iron Giant", "Robots", "Big Hero 6"], clue: "A lonely compactor tidies a silent Earth." },
+                  { image: "level/40.jpg", name: "the breakfast club", challenge: "Normal", alts: ["Sixteen Candles", "Ferris Bueller’s Day Off", "Dazed and Confused"], clue: "Saturday detention and a group confession." },
+                  { image: "level/41.jpg", name: "brazil", challenge: "V. Hard", alts: ["1984", "Twelve Monkeys", "Dark City"], clue: "Ducts, paperwork, and retro-future nightmares." },
+                  { image: "level/42.jpg", name: "barbie", challenge: "Easy", alts: ["Enchanted", "Legally Blonde", "The Lego Movie"], clue: "From Dreamhouse perfection to the “real world.”" },
+                  { image: "level/43.jpg", name: "braveheart", challenge: "Easy", alts: ["Gladiator", "Kingdom of Heaven", "Rob Roy"], clue: "Blue paint and a cry for freedom." },
+                  { image: "level/44.jpg", name: "se7en", challenge: "Normal", alts: ["Zodiac", "The Silence of the Lambs", "Prisoners"], clue: "A serial killer staging the seven deadly sins." },
+                  { image: "level/45.jpg", name: "terminator", challenge: "Normal", alts: ["Terminator 2: Judgment Day", "RoboCop", "Predator"], clue: "A relentless cyborg hunts a diner waitress." },
+                  { image: "level/46.jpg", name: "good will hunting", challenge: "Normal", alts: ["A Beautiful Mind", "Dead Poets Society", "Finding Forrester"], clue: "A janitor solves problems nobody else can." },
+                  { image: "level/47.jpg", name: "pan's labyrinth", challenge: "Normal", alts: ["The Devil’s Backbone", "The Orphanage", "The Shape of Water"], clue: "A faun, a chalk door, and a monstrous captain." },
+                  { image: "level/48.jpg", name: "point break", challenge: "Normal", alts: ["The Fast and the Furious", "The Town", "Blue Crush"], clue: "Bank robbers in presidential masks, then catch a wave." },
+                  { image: "level/49.jpg", name: "truman show", challenge: "Normal", alts: ["Pleasantville", "Eternal Sunshine of the Spotless Mind", "Edtv"], clue: "A man learns his world is a giant set." },
+                  { image: "level/50.jpg", name: "silence of the lambs", challenge: "Easy", alts: ["Se7en", "Zodiac", "Manhunter"], clue: "A fava-bean quip from a brilliant cannibal." },
+                  { image: "level/51.jpg", name: "the fifth element", challenge: "Normal", alts: ["Valerian and the City of a Thousand Planets", "Jupiter Ascending", "The Hitchhiker’s Guide to the Galaxy"], clue: "“Multipass.” Stones save the world." },
+                  { image: "level/52.jpg", name: "american beauty", challenge: "Normal", alts: ["Magnolia", "Revolutionary Road", "The Ice Storm"], clue: "Suburban malaise and a dancing plastic bag." },
+                  { image: "level/53.jpg", name: "napoleon dynamite", challenge: "Normal", alts: ["Little Miss Sunshine", "Juno", "Eagle vs Shark"], clue: "“Vote for Pedro” and tetherball." },
+                  { image: "level/54.jpg", name: "dune", challenge: "Easy", alts: ["Sand Dunes", "Star Wars", "Blade Runner 2049"], clue: "Sandworms and the spice that must flow." },
+                  { image: "level/55.jpg", name: "north by northwest", challenge: "Hard", alts: ["Vertigo", "The 39 Steps", "Charade"], clue: "A crop duster attacks on an empty road." },
+                  { image: "level/56.jpg", name: "scent of a woman", challenge: "Hard", alts: ["The Devil’s Advocate", "Any Given Sunday", "The Godfather Part III"], clue: "“Hoo-ah!” and a tango in a restaurant." },
+                  { image: "level/57.jpg", name: "dog day afternoon", challenge: "Hard", alts: ["Serpico", "Heat", "Inside Man"], clue: "A sweltering bank siege becomes live TV." },
+                  { image: "level/58.jpg", name: "lion king", challenge: "V. Easy", alts: ["The Lion King (2019)", "Bambi", "The Jungle Book"], clue: "Pride Rock and the circle of life." },
+                  { image: "level/59.jpg", name: "whiplash", challenge: "Normal", alts: ["Black Swan", "Amadeus", "La La Land"], clue: "“Not quite my tempo.”" },
+                  { image: "level/60.jpg", name: "coco", challenge: "Normal", alts: ["The Book of Life", "Encanto", "Kubo and the Two Strings"], clue: "A marigold bridge to the Land of the Dead." },
+                  { image: "level/61.jpg", name: "the green mile", challenge: "Easy", alts: ["The Shawshank Redemption", "Dead Man Walking", "The Hurricane"], clue: "A gentle giant with a miraculous touch on death row." },
+                  { image: "level/62.jpg", name: "reservoir dogs", challenge: "Normal", alts: ["Heat", "The Usual Suspects", "City on Fire"], clue: "Color-coded nicknames after a botched heist." },
+                  { image: "level/63.jpg", name: "seven samurai", challenge: "Hard", alts: ["The Magnificent Seven", "Yojimbo", "Ran"], clue: "Villagers hire swords to repel bandits." },
+                  { image: "level/64.jpg", name: "princess bride", challenge: "Easy", alts: ["Stardust", "Willow", "Robin Hood: Men in Tights"], clue: "“As you wish.”" },
+                  { image: "level/65.jpg", name: "say anything", challenge: "Hard", alts: ["Pretty in Pink", "Sixteen Candles", "Reality Bites"], clue: "A boombox held high under a window." },
+                  { image: "level/66.jpg", name: "drive", challenge: "Hard", alts: ["Baby Driver", "The Place Beyond the Pines", "Only God Forgives"], clue: "A scorpion jacket prowls neon-lit LA." },
+                  { image: "level/67.jpg", name: "nightcrawler", challenge: "Normal", alts: ["Collateral", "Gone Girl", "The Assistant"], clue: "A freelance stringer chases sirens at 2 a.m." },
+                  { image: "level/68.jpg", name: "amelie", challenge: "Normal", alts: ["The Science of Sleep", "Midnight in Paris", "Delicatessen"], clue: "A shy Parisian plots quiet kindnesses." },
+                  { image: "level/69.jpg", name: "the big lebowski", challenge: "Easy", alts: ["Fargo", "Inherent Vice", "Burn After Reading"], clue: "A rug that really ties the room together." },
+                  { image: "level/70.jpg", name: "citizen kane", challenge: "Hard", alts: ["The Magnificent Ambersons", "Sunset Boulevard", "All the President’s Men"], clue: "Whispers of “Rosebud.”" },
+                  { image: "level/71.jpg", name: "fight club", challenge: "Normal", alts: ["American Psycho", "The Machinist", "Se7en"], clue: "Soap, secret rules, and bruised knuckles." },
+                  { image: "level/72.jpg", name: "forrest gump", challenge: "Normal", alts: ["The Curious Case of Benjamin Button", "Rain Man", "Big Fish"], clue: "Bench chats and cross-country running." },
+                  { image: "level/73.jpg", name: "no country for old men", challenge: "Normal", alts: ["There Will Be Blood", "Sicario", "Hell or High Water"], clue: "A captive bolt pistol and a coin toss." },
+                  { image: "level/79.jpg", name: "pulp fiction", challenge: "Normal", alts: ["Reservoir Dogs", "True Romance", "Jackie Brown"], clue: "A glowing briefcase and a diner standoff." },
+                  { image: "level/80.jpg", name: "american psycho", challenge: "Normal", alts: ["The Wolf of Wall Street", "The Machinist", "Fight Club"], clue: "A business card showdown before an axe swing." },
+                  { image: "level/81.jpg", name: "coming to america", challenge: "Normal", alts: ["Trading Places", "The Nutty Professor", "The Prince & Me"], clue: "An African prince flips burgers in Queens." },
+                  { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Raiders of the Lost Ark", "Indiana Jones and the Last Crusade", "The Mummy"], clue: "Temples, traps, and a golden idol." },
+                  { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." }
+
+                     ];
                 
                 this.selectedMovies = [];
                 this.images = {};
@@ -346,14 +355,11 @@
                 this.initAudio();
                 this.selectRandomMovies();
                 await this.preloadAssets();
-                //this.showRules();
                 this.showMenu();
                 this.startAnimationLoop();
             }
 
-
             showMenu() {
-                // Create overlay container
                 const menuOverlay = document.createElement('div');
                 menuOverlay.id = 'menuOverlay';
                 menuOverlay.style.position = 'fixed';
@@ -361,7 +367,7 @@
                 menuOverlay.style.left = '0';
                 menuOverlay.style.width = '100%';
                 menuOverlay.style.height = '100%';
-                menuOverlay.style.background = '#000'; // dark backdrop
+                menuOverlay.style.background = '#000';
                 menuOverlay.style.display = 'flex';
                 menuOverlay.style.flexDirection = 'column';
                 menuOverlay.style.alignItems = 'center';
@@ -369,7 +375,6 @@
                 menuOverlay.style.zIndex = '9999';
                 menuOverlay.style.gap = '20px';
 
-                // Menu image (scaled, not full screen)
                 const menuImage = document.createElement('img');
                 menuImage.src = 'menu.jpg';
                 menuImage.alt = 'Game Menu';
@@ -379,7 +384,6 @@
                 menuImage.style.borderRadius = '12px';
                 menuImage.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
 
-                // Play button
                 const playBtn = document.createElement('button');
                 playBtn.textContent = 'PLAY';
                 playBtn.style.padding = '15px 30px';
@@ -392,21 +396,15 @@
                 playBtn.style.cursor = 'pointer';
                 playBtn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.4)';
 
-                // Start game on click
                 playBtn.addEventListener('click', () => {
                     menuOverlay.remove();
                     this.showRules();
                 });
 
-                // Add to overlay
                 menuOverlay.appendChild(menuImage);
                 menuOverlay.appendChild(playBtn);
-
-                // Add overlay to document
                 document.body.appendChild(menuOverlay);
             }
-
-
             
             selectRandomMovies() {
                 const getRandomSubset = (arr, count) => {
@@ -467,35 +465,9 @@
             }
             
             setupEventListeners() {
-                // Text input validation
-                this.textInput.addEventListener('input', (e) => {
-                    const text = e.target.value;
-                    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-                    
-                    if (words.length > this.maxWords) {
-                        this.showTemporaryMessage('Too long! Please limit your answer to 5 words.');
-                        // Revert to previous valid input
-                        e.target.value = this.submittedAnswer;
-                    } else {
-                        this.submittedAnswer = text.toLowerCase().trim();
-                    }
-                });
-                
-                // Submit button with animation
-                this.submitBtn.addEventListener('click', () => this.handleSubmit());
-                
-                // Enter key submission
-                this.textInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleSubmit();
-                    }
-                });
-                
-                // Prevent zoom on mobile
-                this.textInput.addEventListener('focus', () => {
-                    if (window.innerWidth < 768) {
-                        this.textInput.style.fontSize = '16px'; // Prevents iOS zoom
-                    }
+                // Add click listeners to all choice buttons
+                this.choiceButtons.forEach((button, index) => {
+                    button.addEventListener('click', () => this.handleButtonClick(index));
                 });
             }
             
@@ -503,7 +475,6 @@
                 try {
                     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     
-                    // Create Audio objects for sound files with error handling
                     this.sounds.correct = new Audio();
                     this.sounds.correct.src = 'soundfx/correct.mp3';
                     this.sounds.correct.onerror = () => console.log('Could not load correct sound');
@@ -514,7 +485,6 @@
                     this.sounds.wrong.onerror = () => console.log('Could not load wrong sound');
                     this.sounds.wrong.load();
                     
-                    // Create synthesized sounds as functions
                     this.sounds.select = () => this.playTone(800, 0.1, 'sine');
                     this.sounds.win = () => this.playVictoryFanfare();
                     this.overlayTimer = null;
@@ -522,7 +492,6 @@
                     
                 } catch (e) {
                     console.log('Audio not supported:', e);
-                    // Create fallback empty functions
                     this.sounds.correct = { play: () => {} };
                     this.sounds.wrong = { play: () => {} };
                     this.sounds.select = () => {};
@@ -531,7 +500,6 @@
             }
             
             async preloadAssets() {
-                // Load only the selected movie images
                 const loadPromises = this.selectedMovies.map((movie) => {
                     return new Promise((resolve, reject) => {
                         const img = new Image();
@@ -541,7 +509,6 @@
                         };
                         img.onerror = () => {
                             console.warn(`Failed to load ${movie.image}, creating placeholder`);
-                            // Create placeholder if image fails to load
                             this.createPlaceholderImage(movie);
                             resolve();
                         };
@@ -549,26 +516,20 @@
                     });
                 });
                 
-                // Wait for all images to load
                 await Promise.all(loadPromises);
             }
 
-            // Add this inside your MovieGuessingGame class
             async startNewGame(resetScores = true) {
-                // stop any running timers/intervals
                 clearTimeout(this.levelTimer);
                 clearInterval(this.countdownInterval);
                 if (this.overlayTimer) { clearTimeout(this.overlayTimer); this.overlayTimer = null; }
                 if (this.confettiTimer) { clearTimeout(this.confettiTimer); this.confettiTimer = null; }
 
-                // remove any badge overlay created by showBadge
                 const badgeOverlay = document.getElementById('badgeOverlay');
                 if (badgeOverlay) badgeOverlay.remove();
 
-                // hide built-in overlay if visible
                 this.hideOverlay();
 
-                // optionally reset core game stats
                 if (resetScores) {
                     this.score = 0;
                     this.correctAnswers = 0;
@@ -576,39 +537,30 @@
                     if (this.scoreDisplay) this.scoreDisplay.textContent = '0';
                 }
 
-                // reset level-related state
                 this.currentLevel = 0;
-                this.remainingAttempts = 3;
+                this.remainingAttempts = 2;
                 this.levelAttempts = 0;
-                this.submittedAnswer = '';
                 this.isGameActive = false;
+                this.buttonsDisabled = false;
 
-                // clear previously cached images to free memory
                 this.images = {};
 
-                // pick new movies and preload them
-                this.selectRandomMovies();        // this will set this.selectedMovies
+                this.selectRandomMovies();
                 try {
-                    await this.preloadAssets();   // wait for images/placeholders to be ready
+                    await this.preloadAssets();
                 } catch (e) {
                     console.warn('preloadAssets failed (continuing):', e);
                 }
 
-                // small delay so UI/DOM settles (optional)
                 await new Promise(r => setTimeout(r, 120));
 
-                // set flag and draw first level
                 this.isGameActive = true;
                 this.drawCurrentLevel();
 
-                // start the level timers properly and show input
-                // drawCurrentLevel calls resetLevelTimer/startLevel already in your code
-                setTimeout(() => this.showTextField(), 500);
+                setTimeout(() => this.showButtons(), 500);
             }
-
             
             createPlaceholderImage(movie) {
-                // Generate random colors for placeholder
                 const colors = [
                     '#1a237e', '#bf360c', '#263238', '#4a148c', '#b71c1c',
                     '#3e2723', '#0d47a1', '#1b5e20', '#e65100', '#4a148c'
@@ -621,7 +573,6 @@
                 
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 
-                // Create placeholder background
                 const gradient = ctx.createLinearGradient(0, 0, 400, 400);
                 gradient.addColorStop(0, randomColor);
                 gradient.addColorStop(1, this.darkenColor(randomColor, 30));
@@ -629,7 +580,6 @@
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, 400, 400);
                 
-                // Add "IMAGE NOT FOUND" text
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 24px Georgia, serif';
                 ctx.textAlign = 'center';
@@ -710,22 +660,15 @@
                 this.animations.push(animation);
             }
             
-            // Score system methods
             calculateScore(timeToAnswer, attempts, isCorrect) {
                 if (!isCorrect) return 0;
                 
-                let basePoints = 1000; // Base points for correct answer
-                
-                // Time bonus (faster = more points)
-                // Maximum 30 seconds, award more points for quicker answers
+                let basePoints = 1000;
                 const timeBonus = Math.max(0, Math.floor((30 - timeToAnswer) * 10));
-                
-                // Attempt penalty (fewer attempts = more points)
                 const attemptMultiplier = attempts === 1 ? 1.0 : attempts === 2 ? 0.7 : 0.4;
-                
                 const levelScore = Math.floor((basePoints + timeBonus) * attemptMultiplier);
                 
-                return Math.max(100, levelScore); // Minimum 100 points
+                return Math.max(100, levelScore);
             }
             
             updateScore(points) {
@@ -734,7 +677,7 @@
             }
             
             getFinalGrade() {
-                const maxPossibleScore = this.totalRounds * 1300; // Rough estimate
+                const maxPossibleScore = this.totalRounds * 1300;
                 const percentage = (this.score / maxPossibleScore) * 100;
                 
                 if (percentage >= 90) return 'A+';
@@ -750,7 +693,7 @@
                 this.messageBox.className = 'message-box rules';
                 this.messageText.innerHTML = `
                     <h2>🎬 Welcome to Movie Quest!</h2>
-                    <p>Guess the movie from the poster</p>
+                    <p>Choose the correct movie name from 4 options</p>
                     <p>20 Random Movies - Good luck! 🍿</p>
                     <p>🏆 Score: Speed + Accuracy = Points!</p>
                 `;
@@ -765,8 +708,7 @@
             startGame() {
                 this.isGameActive = true;
                 this.drawCurrentLevel();
-                setTimeout(() => this.showTextField(), 1000);
-
+                setTimeout(() => this.showButtons(), 1000);
             }
             
             startLevel() {
@@ -777,11 +719,9 @@
             drawCurrentLevel() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Reset timer for new level
                 this.resetLevelTimer();
                 this.startLevel();
 
-                // Draw background gradient
                 const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
                 gradient.addColorStop(0, '#0f0f0f');
                 gradient.addColorStop(1, '#1a1a1a');
@@ -824,26 +764,42 @@
 
                         this.ctx.shadowColor = 'transparent';
 
-                        // Level text
                         this.ctx.fillStyle = '#d4af37';
                         this.ctx.font = 'bold 32px Georgia, serif';
                         this.ctx.textAlign = 'center';
                         this.ctx.fillText(`Level ${this.currentLevel + 1} of ${this.totalRounds}`, canvasWidth / 2, 80);
 
-                        // Border
                         this.ctx.strokeStyle = '#d4af37';
                         this.ctx.lineWidth = 3;
                         this.ctx.strokeRect(x - 2, y - 2, displayWidth + 4, displayHeight + 4);
 
-                        // Show timer on canvas
                         this.ctx.fillStyle = '#ffffff';
                         this.ctx.font = 'bold 28px Arial';
                         this.ctx.textAlign = 'right';
                         this.ctx.fillText(`⏳ ${this.timeRemaining}s`, canvasWidth - 50, 80);
-
                     }
                 }
+                
+                // Set up button choices for this level
+                this.setupButtonChoices();
             }
+
+            setupButtonChoices() {
+                // Randomly choose which button will have the correct answer
+                this.correctButtonIndex = Math.floor(Math.random() * 4);
+
+                const currentMovie = this.selectedMovies[this.currentLevel];
+                const allChoices = [...currentMovie.alts]; // copy the alternatives
+                allChoices.splice(this.correctButtonIndex, 0, currentMovie.name); // insert correct answer at correct index
+
+                // Set button texts from choices array
+                this.choiceButtons.forEach((button, index) => {
+                    button.textContent = allChoices[index].toUpperCase();
+                });
+
+                console.log(`Level ${this.currentLevel + 1}: Correct answer is button ${this.correctButtonIndex + 1} (${currentMovie.name})`);
+            }
+
 
             resetLevelTimer() {
                 clearTimeout(this.levelTimer);
@@ -851,7 +807,6 @@
 
                 this.timeRemaining = 30;
 
-                // Countdown every second
                 this.countdownInterval = setInterval(() => {
                     this.timeRemaining--;
                     this.updateTimerDisplay();
@@ -861,7 +816,6 @@
                     }
                 }, 1000);
 
-                // Force next level after 30 seconds
                 this.levelTimer = setTimeout(() => {
                     clearInterval(this.countdownInterval);
                     this.showTimeOverMessage();
@@ -878,6 +832,8 @@
             }
 
             showTimeOverMessage() {
+                this.buttonsDisabled = true;
+                this.hideButtons();
                 this.failedLevels++;
                 this.messageBox.className = 'message-box incorrect';
                 this.messageText.innerHTML = `
@@ -893,95 +849,77 @@
                 }, 3000);
             }
             
-            showTextField() {
-                this.textInput.style.display = 'block';
-                this.submitBtn.style.display = 'block';
-                this.textInput.value = '';
-                this.textInput.focus();
-                this.submittedAnswer = '';
+            showButtons() {
+                this.buttonContainer.style.display = 'flex';
+                this.buttonsDisabled = false;
                 
                 // Add entrance animation
-                this.textInput.style.transform = 'translateX(-50%) translateY(20px)';
-                this.textInput.style.opacity = '0';
-                this.submitBtn.style.transform = 'translateX(-50%) translateY(20px)';
-                this.submitBtn.style.opacity = '0';
-                
-                setTimeout(() => {
-                    this.textInput.style.transition = 'all 0.3s ease';
-                    this.textInput.style.transform = 'translateX(-50%) translateY(0)';
-                    this.textInput.style.opacity = '1';
+                this.choiceButtons.forEach((button, index) => {
+                    button.style.transform = 'translateY(20px)';
+                    button.style.opacity = '0';
                     
-                    this.submitBtn.style.transition = 'all 0.3s ease';
-                    this.submitBtn.style.transform = 'translateX(-50%) translateY(0)';
-                    this.submitBtn.style.opacity = '1';
-                }, 100);
-
-
+                    setTimeout(() => {
+                        button.style.transition = 'all 0.3s ease';
+                        button.style.transform = 'translateY(0)';
+                        button.style.opacity = '1';
+                    }, index * 100 + 100);
+                });
             }
             
-            hideTextField() {
-                this.textInput.style.transition = 'all 0.3s ease';
-                this.textInput.style.transform = 'translateX(-50%) translateY(20px)';
-                this.textInput.style.opacity = '0';
-                
-                this.submitBtn.style.transition = 'all 0.3s ease';
-                this.submitBtn.style.transform = 'translateX(-50%) translateY(20px)';
-                this.submitBtn.style.opacity = '0';
+            hideButtons() {
+                this.choiceButtons.forEach((button, index) => {
+                    button.style.transition = 'all 0.3s ease';
+                    button.style.transform = 'translateY(20px)';
+                    button.style.opacity = '0';
+                });
                 
                 setTimeout(() => {
-                    this.textInput.style.display = 'none';
-                    this.submitBtn.style.display = 'none';
+                    this.buttonContainer.style.display = 'none';
                 }, 300);
             }
 
-            handleSubmit() {
-                if (!this.submittedAnswer.trim()) {
-                    this.showTemporaryMessage('Please enter an answer!');
-                    return;
-                }
+            handleButtonClick(buttonIndex) {
+                if (this.buttonsDisabled || !this.isGameActive) return;
 
                 this.levelAttempts++;
+                this.buttonsDisabled = true;
 
                 if (typeof this.sounds.select === 'function') {
                     this.sounds.select();
                 }
 
-                // Button press animation
-                this.submitBtn.style.transform = 'translateX(-50%) scale(0.95)';
-                setTimeout(() => {
-                    this.submitBtn.style.transform = 'translateX(-50%) scale(1)';
-                }, 150);
+                // Visual feedback for the clicked button
+                const clickedButton = this.choiceButtons[buttonIndex];
+                
+                if (buttonIndex === this.correctButtonIndex) {
+                    // Correct answer
+                    clearTimeout(this.levelTimer);
+                    clearInterval(this.countdownInterval);
 
-                this.hideTextField();
-
-                setTimeout(() => {
-                    const currentMovie = this.selectedMovies[this.currentLevel];
-                    const isCorrect = this.submittedAnswer
-                        .toLowerCase()
-                        .includes(currentMovie.name.toLowerCase());
-
-                    if (isCorrect) {
-                        clearTimeout(this.levelTimer);
-                        clearInterval(this.countdownInterval);
-
-                        // Calculate score for this level
-                        const timeToAnswer = Math.floor((Date.now() - this.levelStartTime) / 1000);
-                        const levelPoints = this.calculateScore(timeToAnswer, this.levelAttempts, true);
-                        this.updateScore(levelPoints);
-                        this.correctAnswers++;
-
-                        try {
-                            this.sounds.correct.play().catch(e => console.log('Could not play correct sound'));
-                        } catch (e) {
-                            console.log('Error playing correct sound:', e);
-                        }
-
-                        this.showCorrectMessage(levelPoints);
-                        return;
-                    } 
+                    clickedButton.classList.add('correct-answer');
                     
+                    const timeToAnswer = Math.floor((Date.now() - this.levelStartTime) / 1000);
+                    const levelPoints = this.calculateScore(timeToAnswer, this.levelAttempts, true);
+                    this.updateScore(levelPoints);
+                    this.correctAnswers++;
+
+                    try {
+                        this.sounds.correct.play().catch(e => console.log('Could not play correct sound'));
+                    } catch (e) {
+                        console.log('Error playing correct sound:', e);
+                    }
+
+                    setTimeout(() => {
+                        clickedButton.classList.remove('correct-answer');
+                        this.hideButtons();
+                        this.showCorrectMessage(levelPoints);
+                    }, 800);
+                    
+                } else {
                     // Wrong answer
                     this.remainingAttempts--;
+                    
+                    clickedButton.classList.add('wrong-answer');
 
                     try {
                         this.sounds.wrong.play().catch(e => console.log('Could not play wrong sound'));
@@ -989,19 +927,21 @@
                         console.log('Error playing wrong sound:', e);
                     }
 
-                    if (this.remainingAttempts > 0) {
-                        this.showTryAgainMessage();
-                        setTimeout(() => this.showTextField(), 1000); 
-                    } else {
-                        // Out of attempts
-                        clearTimeout(this.levelTimer);
-                        clearInterval(this.countdownInterval);
-                        this.failedLevels++;
-
-                        this.showIncorrectMessage();
-                        return;
-                    }
-                }, 400);
+                    setTimeout(() => {
+                        clickedButton.classList.remove('wrong-answer');
+                        
+                        if (this.remainingAttempts > 0) {
+                            this.buttonsDisabled = false;
+                            this.showTryAgainMessage();
+                        } else {
+                            clearTimeout(this.levelTimer);
+                            clearInterval(this.countdownInterval);
+                            this.failedLevels++;
+                            this.hideButtons();
+                            this.showIncorrectMessage();
+                        }
+                    }, 800);
+                }
             }
 
             showTryAgainMessage() {
@@ -1043,162 +983,174 @@
                 setTimeout(() => {
                     this.hideOverlay();
                     setTimeout(() => this.nextLevel(), 400);
-                }, 3500);
+                }, 4000);
             }
 
             nextLevel() {
                 this.currentLevel++;
-                this.remainingAttempts = 3;
+                this.remainingAttempts = 2;
                 
-                if (this.currentLevel >= 20) { //this.selectedMovies.length) {
+                if (this.currentLevel >= 2) {
                     this.showGameComplete();
                 } else {
                     this.drawCurrentLevel();
-                    setTimeout(() => this.showTextField(), 1000);
+                    setTimeout(() => this.showButtons(), 1000);
                 }
             }
             
-showGameComplete() {
-    if (typeof this.sounds.win === 'function') {
-        this.sounds.win();
-    }
-    
-    const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-    const grade = this.getFinalGrade();
-    
-    this.messageBox.className = 'message-box correct';
-    this.messageText.innerHTML = `
-        <h2>🏆 Game Complete!</h2>
-        <p>Final Score: <strong>${this.score.toLocaleString()}</strong></p>
-        <p>Correct: ${this.correctAnswers}/${this.totalRounds} (${accuracy}%)</p>
-        <p>Failed Levels: ${this.failedLevels}</p>
-        <p>Grade: <strong>${grade}</strong></p>
-        <button id="continueBtn" style="
-            margin-top: 20px;
-            padding: 10px 18px;
-            background-color: #d4af37;
-            border: none;
-            border-radius: 8px;
-            color: #141414;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        ">
-            Continue
-        </button>
-    `;
-    
-    this.showOverlay();
-    this.isGameActive = false;
-    this.addConfettiEffect();
+            showGameComplete() {
+                if (typeof this.sounds.win === 'function') {
+                    this.sounds.win();
+                }
+                
+                const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+                const grade = this.getFinalGrade();
+                
+                this.messageBox.className = 'message-box correct';
+                this.messageText.innerHTML = `
+                    <h2>🏆 Game Complete!</h2>
+                    <p>Final Score: <strong>${this.score.toLocaleString()}</strong></p>
+                    <p>Correct: ${this.correctAnswers}/${this.totalRounds} (${accuracy}%)</p>
+                    <p>Failed Levels: ${this.failedLevels}</p>
+                    <p>Grade: <strong>${grade}</strong></p>
+                    <button id="continueBtn" style="
+                        margin-top: 20px;
+                        padding: 10px 18px;
+                        background-color: #d4af37;
+                        border: none;
+                        border-radius: 8px;
+                        color: #141414;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">
+                        Continue
+                    </button>
+                `;
+                
+                this.showOverlay();
+                this.isGameActive = false;
+                this.addConfettiEffect();
 
-    // Actually attach the click handler here
-    const btn = document.getElementById('continueBtn');
-    if (btn) {
-        btn.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            this.showBadge(grade);
-        }, { once: true });
-    }
-}
+                const btn = document.getElementById('continueBtn');
+                if (btn) {
+                    btn.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        this.showBadge(grade);
+                    }, { once: true });
+                }
+            }
 
-showBadge(grade) {
-    if (!grade) grade = 'unknown';
-    const badgePath = `badges/${grade.toLowerCase()}.png`;
+            showBadge(grade) {
+                if (!grade) grade = 'unknown';
+                const badgePath = `badges/${grade.toLowerCase()}.png`;
 
-    // Remove any existing overlay first
-    const existingOverlay = document.getElementById('badgeOverlay');
-    if (existingOverlay) existingOverlay.remove();
+                const existingOverlay = document.getElementById('badgeOverlay');
+                if (existingOverlay) existingOverlay.remove();
 
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.id = 'badgeOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '999999';
-    overlay.style.color = 'white';
-    overlay.style.textAlign = 'center';
-    overlay.style.padding = '20px';
+                const overlay = document.createElement('div');
+                overlay.id = 'badgeOverlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+                overlay.style.display = 'flex';
+                overlay.style.flexDirection = 'column';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                overlay.style.zIndex = '999999';
+                overlay.style.color = 'white';
+                overlay.style.textAlign = 'center';
+                overlay.style.padding = '20px';
 
-    // Title
-    const title = document.createElement('h2');
-    title.textContent = '🎖️ You Earned a Badge!';
-    overlay.appendChild(title);
+                const title = document.createElement('h2');
+                title.textContent = '🎖️ You Earned a Badge!';
+                overlay.appendChild(title);
 
-    // Badge image
-    const badgeImg = document.createElement('img');
-    badgeImg.src = badgePath;
-    badgeImg.alt = `${grade} Badge`;
-    badgeImg.style.maxWidth = '80vw';
-    badgeImg.style.maxHeight = '50vh';
-    badgeImg.style.margin = '20px 0';
-    overlay.appendChild(badgeImg);
+                const badgeImg = document.createElement('img');
+                badgeImg.src = badgePath;
+                badgeImg.alt = `${grade} Badge`;
+                badgeImg.style.maxWidth = '80vw';
+                badgeImg.style.maxHeight = '50vh';
+                badgeImg.style.margin = '20px 0';
+                overlay.appendChild(badgeImg);
 
-    // Grade text
-    const gradeText = document.createElement('p');
-    gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
-    overlay.appendChild(gradeText);
+                const gradeText = document.createElement('p');
+                gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
+                overlay.appendChild(gradeText);
 
-    // Buttons container
-    const btnContainer = document.createElement('div');
-    btnContainer.style.display = 'flex';
-    btnContainer.style.gap = '20px';
-    btnContainer.style.marginTop = '20px';
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.gap = '20px';
+                btnContainer.style.marginTop = '20px';
 
-    // Mint button
-    const mintBtn = document.createElement('button');
-    mintBtn.textContent = 'Mint';
-    mintBtn.style.padding = '12px 24px';
-    mintBtn.style.backgroundColor = '#28a745';
-    mintBtn.style.color = '#fff';
-    mintBtn.style.border = 'none';
-    mintBtn.style.borderRadius = '8px';
-    mintBtn.style.fontSize = '16px';
-    mintBtn.style.cursor = 'pointer';
-    mintBtn.onclick = () => {
-        alert('Mint clicked!');
-        overlay.remove();
-    };
+            const mintBtn = document.createElement('button');
+            mintBtn.textContent = 'Mint';
+            mintBtn.style.padding = '12px 24px';
+            mintBtn.style.backgroundColor = '#28a745';
+            mintBtn.style.color = '#fff';
+            mintBtn.style.border = 'none';
+            mintBtn.style.borderRadius = '8px';
+            mintBtn.style.fontSize = '16px';
+            mintBtn.style.cursor = 'pointer';
 
-    // Restart button
-    const restartBtn = document.createElement('button');
-    restartBtn.textContent = 'Restart';
-    restartBtn.style.padding = '12px 24px';
-    restartBtn.style.backgroundColor = '#d4af37';
-    restartBtn.style.color = '#141414';
-    restartBtn.style.border = 'none';
-    restartBtn.style.borderRadius = '8px';
-    restartBtn.style.fontSize = '16px';
-    restartBtn.style.cursor = 'pointer';
+            mintBtn.onclick = async () => {
+                const walletAddress = '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
 
+                mintBtn.disabled = true;
+                mintBtn.textContent = 'Minting... ⏳';
 
-    restartBtn.onclick = async () => {
-        restartBtn.disabled = true;
-        // let startNewGame take responsibility for clearing/hiding overlays if you prefer;
-        // otherwise remove the badge overlay AFTER the new game is started:
-        await this.startNewGame(true); // true => reset scores; pass false to keep scores
-        overlay.remove();
-    };
+                try {
+                    const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ address: walletAddress, quantity: 1 })
+                    });
 
-    // Append buttons
-    btnContainer.appendChild(mintBtn);
-    btnContainer.appendChild(restartBtn);
-    overlay.appendChild(btnContainer);
+                    const data = await res.json();
 
-    // Add overlay to body
-    document.body.appendChild(overlay);
-}
+                    if (res.ok && data.success) {
+                        alert(`✅ Mint Successful!\nWallet: ${walletAddress}\nTx Hash: ${data.txHash}`);
+                        mintBtn.style.display = 'none'; // Hide button after success
+                    } else {
+                        throw new Error(data.error || 'Mint failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert(`❌ Mint failed: ${err.message}`);
+                } finally {
+                    if (mintBtn.style.display !== 'none') { // Only reset if not hidden
+                        mintBtn.disabled = false;
+                        mintBtn.textContent = 'Mint';
+                    }
+                }
+            };
 
 
+                const restartBtn = document.createElement('button');
+                restartBtn.textContent = 'Restart';
+                restartBtn.style.padding = '12px 24px';
+                restartBtn.style.backgroundColor = '#d4af37';
+                restartBtn.style.color = '#141414';
+                restartBtn.style.border = 'none';
+                restartBtn.style.borderRadius = '8px';
+                restartBtn.style.fontSize = '16px';
+                restartBtn.style.cursor = 'pointer';
 
+                restartBtn.onclick = async () => {
+                    restartBtn.disabled = true;
+                    await this.startNewGame(true);
+                    overlay.remove();
+                };
+
+                btnContainer.appendChild(mintBtn);
+                btnContainer.appendChild(restartBtn);
+                overlay.appendChild(btnContainer);
+
+                document.body.appendChild(overlay);
+            }
             
             addConfettiEffect() {
                 const colors = ['#d4af37', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'];
@@ -1218,14 +1170,12 @@ showBadge(grade) {
                         
                         document.getElementById('gameContainer').appendChild(confetti);
                         
-                        // Animate falling
                         confetti.style.transition = 'all 3s ease-in';
                         setTimeout(() => {
                             confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(720deg)`;
                             confetti.style.opacity = '0';
                         }, 100);
                         
-                        // Remove after animation
                         setTimeout(() => {
                             confetti.remove();
                         }, 3200);
