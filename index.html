@@ -371,23 +371,8 @@
                 if (!fidValue) {
                     console.warn("⚠ No FID found, continuing without wallet address...");
                 } else {
-                    const logResult = await this.logURL(fidValue);
-                    if (!logResult.success) {
-                        console.warn("⚠ Failed to log FID, continuing anyway...");
-                    }
-
-                    // Try to get ETH address linked to this FID
                     try {
-                        const url = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidValue}`;
-                        const res = await fetch(url, {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "x-api-key": "28AE94E4-4E84-4985-B965-6D5463DCE6CB",
-                                "x-neynar-experimental": "false"
-                            }
-                        });
-
+                        const res = await fetch(`/api/getEthAddress?fid=${fidValue}`);
                         if (res.ok) {
                             const result = await res.json();
                             if (
@@ -404,12 +389,13 @@
                                 console.warn("ℹ️ No ETH address linked to FID");
                             }
                         } else {
-                            console.error("❌ Neynar API request failed with status", res.status);
+                            console.error("❌ Failed to fetch ETH address, status", res.status);
                         }
                     } catch (err) {
                         console.error("❌ Error fetching ETH address:", err);
                     }
                 }
+
 
                 this.showMenu();
                 this.startAnimationLoop();
