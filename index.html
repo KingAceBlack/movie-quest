@@ -238,7 +238,7 @@
                 this.messageText = document.getElementById('messageText');
                 this.tempMessage = document.getElementById('tempMessage');
                 this.scoreDisplay = document.getElementById('currentScore');
-                this.remainingAttempts = 2;
+                this.remainingAttempts = 1;
 
                 this.currentLevel = 0;
                 this.correctButtonIndex = 0;
@@ -303,7 +303,7 @@
                   { image: "level/42.jpg", name: "barbie", challenge: "Easy", alts: ["Enchanted", "Legally Blonde", "The Lego Movie"], clue: "From Dreamhouse perfection to the “real world.”" },
                   { image: "level/43.jpg", name: "braveheart", challenge: "Easy", alts: ["Gladiator", "Kingdom of Heaven", "Rob Roy"], clue: "Blue paint and a cry for freedom." },
                   { image: "level/44.jpg", name: "se7en", challenge: "Normal", alts: ["Zodiac", "The Silence of the Lambs", "Prisoners"], clue: "A serial killer staging the seven deadly sins." },
-                  { image: "level/45.jpg", name: "terminator", challenge: "Normal", alts: ["Terminator 2: Judgment Day", "RoboCop", "Predator"], clue: "A relentless cyborg hunts a diner waitress." },
+                  { image: "level/45.jpg", name: "terminator", challenge: "Normal", alts: ["Commando", "RoboCop", "Predator"], clue: "A relentless cyborg hunts a diner waitress." },
                   { image: "level/46.jpg", name: "good will hunting", challenge: "Normal", alts: ["A Beautiful Mind", "Dead Poets Society", "Finding Forrester"], clue: "A janitor solves problems nobody else can." },
                   { image: "level/47.jpg", name: "pan's labyrinth", challenge: "Normal", alts: ["The Devil’s Backbone", "The Orphanage", "The Shape of Water"], clue: "A faun, a chalk door, and a monstrous captain." },
                   { image: "level/48.jpg", name: "point break", challenge: "Normal", alts: ["The Fast and the Furious", "The Town", "Blue Crush"], clue: "Bank robbers in presidential masks, then catch a wave." },
@@ -312,11 +312,11 @@
                   { image: "level/51.jpg", name: "the fifth element", challenge: "Normal", alts: ["Valerian and the City of a Thousand Planets", "Jupiter Ascending", "The Hitchhiker’s Guide to the Galaxy"], clue: "“Multipass.” Stones save the world." },
                   { image: "level/52.jpg", name: "american beauty", challenge: "Normal", alts: ["Magnolia", "Revolutionary Road", "The Ice Storm"], clue: "Suburban malaise and a dancing plastic bag." },
                   { image: "level/53.jpg", name: "napoleon dynamite", challenge: "Normal", alts: ["Little Miss Sunshine", "Juno", "Eagle vs Shark"], clue: "“Vote for Pedro” and tetherball." },
-                  { image: "level/54.jpg", name: "dune", challenge: "Easy", alts: ["Sand Dunes", "Star Wars", "Blade Runner 2049"], clue: "Sandworms and the spice that must flow." },
+                  { image: "level/54.jpg", name: "dune", challenge: "Easy", alts: ["Sandman", "Star Wars", "Blade Runner 2049"], clue: "Sandworms and the spice that must flow." },
                   { image: "level/55.jpg", name: "north by northwest", challenge: "Hard", alts: ["Vertigo", "The 39 Steps", "Charade"], clue: "A crop duster attacks on an empty road." },
                   { image: "level/56.jpg", name: "scent of a woman", challenge: "Hard", alts: ["The Devil’s Advocate", "Any Given Sunday", "The Godfather Part III"], clue: "“Hoo-ah!” and a tango in a restaurant." },
                   { image: "level/57.jpg", name: "dog day afternoon", challenge: "Hard", alts: ["Serpico", "Heat", "Inside Man"], clue: "A sweltering bank siege becomes live TV." },
-                  { image: "level/58.jpg", name: "lion king", challenge: "V. Easy", alts: ["The Lion King (2019)", "Bambi", "The Jungle Book"], clue: "Pride Rock and the circle of life." },
+                  { image: "level/58.jpg", name: "lion king", challenge: "V. Easy", alts: ["Tarzan", "Bambi", "The Jungle Book"], clue: "Pride Rock and the circle of life." },
                   { image: "level/59.jpg", name: "whiplash", challenge: "Normal", alts: ["Black Swan", "Amadeus", "La La Land"], clue: "“Not quite my tempo.”" },
                   { image: "level/60.jpg", name: "coco", challenge: "Normal", alts: ["The Book of Life", "Encanto", "Kubo and the Two Strings"], clue: "A marigold bridge to the Land of the Dead." },
                   { image: "level/61.jpg", name: "the green mile", challenge: "Easy", alts: ["The Shawshank Redemption", "Dead Man Walking", "The Hurricane"], clue: "A gentle giant with a miraculous touch on death row." },
@@ -335,7 +335,7 @@
                   { image: "level/79.jpg", name: "pulp fiction", challenge: "Normal", alts: ["Reservoir Dogs", "True Romance", "Jackie Brown"], clue: "A glowing briefcase and a diner standoff." },
                   { image: "level/80.jpg", name: "american psycho", challenge: "Normal", alts: ["The Wolf of Wall Street", "The Machinist", "Fight Club"], clue: "A business card showdown before an axe swing." },
                   { image: "level/81.jpg", name: "coming to america", challenge: "Normal", alts: ["Trading Places", "The Nutty Professor", "The Prince & Me"], clue: "An African prince flips burgers in Queens." },
-                  { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Raiders of the Lost Ark", "Indiana Jones and the Last Crusade", "The Mummy"], clue: "Temples, traps, and a golden idol." },
+                  { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Uncharted", "National Treasure", "The Mummy"], clue: "Temples, traps, and a golden idol." },
                   { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." }
 
                      ];
@@ -582,7 +582,7 @@
                 }
 
                 this.currentLevel = 0;
-                this.remainingAttempts = 2;
+                this.remainingAttempts = 1;
                 this.levelAttempts = 0;
                 this.isGameActive = false;
                 this.buttonsDisabled = false;
@@ -1032,7 +1032,7 @@
 
             nextLevel() {
                 this.currentLevel++;
-                this.remainingAttempts = 2;
+                this.remainingAttempts = 1;
                 
                 if (this.currentLevel >= 2) {
                     this.showGameComplete();
@@ -1127,10 +1127,12 @@
 
                 const btnContainer = document.createElement('div');
                 btnContainer.style.display = 'flex';
-                btnContainer.style.gap = '20px';
+                btnContainer.style.gap = '15px';
                 btnContainer.style.marginTop = '20px';
+                btnContainer.style.flexWrap = 'wrap';
+                btnContainer.style.justifyContent = 'center';
 
-               const mintBtn = document.createElement('button');
+                const mintBtn = document.createElement('button');
                 mintBtn.textContent = 'Mint';
                 mintBtn.style.padding = '12px 24px';
                 mintBtn.style.backgroundColor = '#28a745';
@@ -1141,8 +1143,18 @@
                 mintBtn.style.cursor = 'pointer';
 
                 mintBtn.onclick = async () => {
-                    // Use player's ETH address if available, otherwise default
                     const walletAddress = this.playerAddress || '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
+                    const grade = this.getFinalGrade();
+                    const gradeToTokenId = {
+                        "A+": 5,
+                        "A": 4,
+                        "B+": 3,
+                        "B": 2,
+                        "C+": 1,
+                        "C": 1,
+                        "D": 0
+                    };
+                    const tokenId = gradeToTokenId[grade] ?? 0;
 
                     mintBtn.disabled = true;
                     mintBtn.textContent = 'Minting... ⏳';
@@ -1151,29 +1163,56 @@
                         const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ address: walletAddress, quantity: 1 })
+                            body: JSON.stringify({ 
+                                address: walletAddress, 
+                                tokenId,
+                                quantity: 1 
+                            })
                         });
 
                         const data = await res.json();
 
                         if (res.ok && data.success) {
-                            alert(`✅ Mint Successful!\nWallet: ${walletAddress}\nTx Hash: ${data.txHash}`);
-                            mintBtn.style.display = 'none'; // Hide button after success
+                            badgeImg.style.display = 'none';
+                            mintBtn.style.display = 'none';
+                            title.textContent = '✅ Mint Successful!';
+                            gradeText.innerHTML = `<p style="font-size:11px; text-align:center;">Wallet: ${walletAddress}</p>`;
                         } else {
-                            throw new Error(data.error || 'Mint failed');
+                            badgeImg.style.display = 'none';
+                            mintBtn.style.display = 'none';
+                            title.textContent = '❌ Mint Failed!';
+                            gradeText.innerHTML = `<p>${err.message}</p>`;
                         }
+
                     } catch (err) {
                         console.error(err);
-                        alert(`❌ Mint failed: ${err.message}`);
+                        this.messageBox.className = 'message-box incorrect';
+                        this.messageText.innerHTML = `
+                            <h2>❌ Mint Failed!</h2>
+                            <p>${err.message}</p>
+                        `;
+                        this.showOverlay();
                     } finally {
-                        if (mintBtn.style.display !== 'none') { // Only reset if not hidden
+                        if (mintBtn.style.display !== 'none') {
                             mintBtn.disabled = false;
                             mintBtn.textContent = 'Mint';
                         }
                     }
                 };
 
+                const shareBtn = document.createElement('button');
+                shareBtn.textContent = 'Share';
+                shareBtn.style.padding = '12px 24px';
+                shareBtn.style.backgroundColor = '#1da1f2';
+                shareBtn.style.color = '#fff';
+                shareBtn.style.border = 'none';
+                shareBtn.style.borderRadius = '8px';
+                shareBtn.style.fontSize = '16px';
+                shareBtn.style.cursor = 'pointer';
 
+                shareBtn.onclick = () => {
+                    this.shareToFarcaster(grade);
+                };
 
                 const restartBtn = document.createElement('button');
                 restartBtn.textContent = 'Restart';
@@ -1192,11 +1231,27 @@
                 };
 
                 btnContainer.appendChild(mintBtn);
+                btnContainer.appendChild(shareBtn);
                 btnContainer.appendChild(restartBtn);
                 overlay.appendChild(btnContainer);
 
                 document.body.appendChild(overlay);
             }
+
+
+shareToFarcaster(grade) {
+    const baseUrl = "https://warpcast.com/~/compose";  // ← CHANGED: warpcast not farcaster
+    const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+    const text = `🎬 Think you know movies? Put your film knowledge to the test in Movie QUEST`;
+    
+    // Use a safe fallback URL instead of trying to parse current URL
+    const gameUrl = "https://cinema-quest-eosin.vercel.app/"; // Replace with your actual game URL
+    
+    const shareUrl = baseUrl + "?text=" + encodeURIComponent(text) +
+        "&embeds[]=" + encodeURIComponent(gameUrl);
+    
+    window.location.href = shareUrl;
+}
             
             addConfettiEffect() {
                 const colors = ['#d4af37', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'];
