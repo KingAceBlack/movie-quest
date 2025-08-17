@@ -1238,20 +1238,34 @@
                 document.body.appendChild(overlay);
             }
 
-
-shareToFarcaster(grade) {
-    const baseUrl = "https://warpcast.com/~/compose";  // ← CHANGED: warpcast not farcaster
-    const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-    const text = `🎬 Think you know movies? Put your film knowledge to the test in Movie QUEST`;
-    
-    // Use a safe fallback URL instead of trying to parse current URL
-    const gameUrl = "https://cinema-quest-eosin.vercel.app/"; // Replace with your actual game URL
-    
-    const shareUrl = baseUrl + "?text=" + encodeURIComponent(text) +
-        "&embeds[]=" + encodeURIComponent(gameUrl);
-    
-    window.location.href = shareUrl;
-}
+        shareToFarcaster(grade) {
+            const baseUrl = "https://warpcast.com/~/compose";
+            const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+            const text = `🎬 Think you know movies? Put your film knowledge to the test in Movie QUEST`;
+            
+            const gameUrl = "https://cinema-quest-eosin.vercel.app/";
+            
+            const shareUrl = baseUrl + "?text=" + encodeURIComponent(text) +
+                "&embeds[]=" + encodeURIComponent(gameUrl);
+            
+            // Try window.open first, fallback to location.href
+            try {
+                const popup = window.open(shareUrl, '_blank', 'width=600,height=700');
+                
+                // If popup is blocked, fallback to location.href
+                if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+                    window.location.href = shareUrl;
+                }
+            } catch (e) {
+                // If all else fails, copy to clipboard and show message
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('Share link copied to clipboard!');
+                }).catch(() => {
+                    // Last resort: show the URL
+                    prompt('Copy this share URL:', shareUrl);
+                });
+            }
+        }
             
             addConfettiEffect() {
                 const colors = ['#d4af37', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'];
