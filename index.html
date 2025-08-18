@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FarMovies - Movie Guessing Game</title>
+    <title>MOVIE QUEST</title>
+    <script src="https://unpkg.com/@farcaster/frame-sdk@0.13.1/dist/sdk.umd.js"></script>
     <style>
         body {
             margin: 0;
@@ -227,6 +228,33 @@
     </div>
 
     <script>
+
+        // Farcaster SDK initialization
+        let isSDKLoaded = false;
+        let farcasterContext = null;
+        async function initializeFarcasterSDK() {
+            if (!isSDKLoaded && typeof sdk !== 'undefined') {
+                try {
+                    farcasterContext = await sdk.context;
+                    console.log('🎯 Farcaster context:', farcasterContext);
+                    
+                    sdk.actions.ready({});
+                    isSDKLoaded = true;
+                    
+                    return farcasterContext;
+                } catch (error) {
+                    console.warn('⚠️ Failed to initialize Farcaster SDK:', error);
+                    return null;
+                }
+            }
+            return farcasterContext;
+        }
+        // Initialize SDK when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFarcasterSDK();
+        });
+
+
         class MovieGuessingGame {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
@@ -336,7 +364,35 @@
                   { image: "level/80.jpg", name: "american psycho", challenge: "Normal", alts: ["The Wolf of Wall Street", "The Machinist", "Fight Club"], clue: "A business card showdown before an axe swing." },
                   { image: "level/81.jpg", name: "coming to america", challenge: "Normal", alts: ["Trading Places", "The Nutty Professor", "The Prince & Me"], clue: "An African prince flips burgers in Queens." },
                   { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Uncharted", "National Treasure", "The Mummy"], clue: "Temples, traps, and a golden idol." },
-                  { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." }
+                  { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." },
+
+                  { image: 'level2/81.jpg', name: 'collateral', challenge: 'Normal', alts: ['Heat', 'The Driver', 'Thief'], clue: 'A cab driver becomes hostage to a hitman for one night.' },
+                    { image: 'level2/82.jpg', name: 'children of men', challenge: 'Normal', alts: ['Blade Runner 2049', 'The Road', 'Mad Max: Fury Road'], clue: 'Hope carried in a world where no children are born.' },
+                    { image: 'level2/83.jpg', name: 'the big short', challenge: 'Normal', alts: ['The Wolf of Wall Street', 'Margin Call', 'Too Big to Fail'], clue: 'Betting against the housing market before the crash.' },
+                    { image: 'level2/84.jpg', name: 'spotlight', challenge: 'Normal', alts: ['All the President\'s Men', 'The Post', 'Dark Waters'], clue: 'Investigative journalists uncover institutional cover-ups.' },
+                    { image: 'level2/85.jpg', name: 'the master', challenge: 'Normal', alts: ['There Will Be Blood', 'The Talented Mr. Ripley', 'Magnolia'], clue: 'A cult leader and his volatile protégé.' },
+                    { image: 'level2/86.jpg', name: 'her', challenge: 'Normal', alts: ['Ex Machina', 'Blade Runner 2049', 'Black Mirror: Be Right Back'], clue: 'Love blooms with an operating system.' },
+                    { image: 'level2/87.jpg', name: 'hell or high water', challenge: 'Normal', alts: ['No Country for Old Men', 'Wind River', 'Sicario'], clue: 'Brothers rob banks to save the family ranch.' },
+                    { image: 'level2/88.jpg', name: 'scream', challenge: 'Normal', alts: ['Halloween', 'Friday the 13th', 'A Nightmare on Elm Street'], clue: 'A masked killer asks about scary movie rules.' },
+                    { image: 'level2/89.jpg', name: 'american psycho', challenge: 'Normal', alts: ['Fight Club', 'The Machinist', 'Nightcrawler'], clue: 'A Wall Street executive\'s morning routine includes murder.' },
+                    { image: 'level2/90.jpg', name: 'lost in translation', challenge: 'Normal', alts: ['Before Sunset', 'Her', 'The Virgin Suicides'], clue: 'Two lonely souls connect in Tokyo hotels.' },
+                    { image: 'level2/91.jpg', name: 'crouching tiger hidden dragon', challenge: 'Normal', alts: ['Hero', 'House of Flying Daggers', 'The Matrix'], clue: 'Sword fighting that defies gravity in ancient China.' },
+                    { image: 'level2/92.jpg', name: '40-year-old virgin', challenge: 'Normal', alts: ['Knocked Up', 'Superbad', 'Anchorman'], clue: 'A man\'s friends help him lose his innocence.' },
+                    { image: 'level2/93.jpg', name: 'superbad', challenge: 'Normal', alts: ['Pineapple Express', 'This Is the End', 'Knocked Up'], clue: 'High school friends on a quest for party supplies.' },
+                    { image: 'level2/94.jpg', name: 'there will be blood', challenge: 'Normal', alts: ['The Master', 'No Country for Old Men', 'Magnolia'], clue: 'An oil prospector\'s greed consumes everything.' },
+                    { image: 'level2/95.jpg', name: 'dumb and dumber', challenge: 'Normal', alts: ['Ace Ventura', 'The Mask', 'Zoolander'], clue: 'Two dimwits road trip to return a briefcase.' },
+                    { image: 'level2/96.jpg', name: 'a few good men', challenge: 'Normal', alts: ['The Verdict', 'Twelve Angry Men', 'My Cousin Vinny'], clue: 'A military courtroom drama about handling the truth.' },
+                    { image: 'level2/97.jpg', name: 'get out', challenge: 'Normal', alts: ['Us', 'The Stepford Wives', 'Invasion of the Body Snatchers'], clue: 'A weekend getaway reveals sinister family secrets.' },
+                    { image: 'level2/98.jpg', name: 'rocky', challenge: 'Normal', alts: ['The Fighter', 'Raging Bull', 'Creed'], clue: 'A small-time boxer gets a shot at the title.' },
+                    { image: 'level2/99.jpg', name: 'grand budapest hotel', challenge: 'Normal', alts: ['The Royal Tenenbaums', 'Moonrise Kingdom', 'Fantastic Mr. Fox'], clue: 'A concierge and his protégé in a pink pastry-box hotel.' },
+                    { image: 'level2/100.jpg', name: 'magic mike', challenge: 'Normal', alts: ['Step Up', 'Saturday Night Fever', 'Showgirls'], clue: 'A construction worker\'s night job involves choreography.' },
+                    { image: 'level2/101.jpg', name: 'avengers endgame', challenge: 'Normal', alts: ['Avengers: Infinity War', 'Justice League', 'X-Men: Days of Future Past'], clue: 'Heroes assemble for a final time-traveling battle.' },
+                    { image: 'level2/102.jpg', name: 'the shape of water', challenge: 'Normal', alts: ['Pan\'s Labyrinth', 'The Creature from the Black Lagoon', 'Beauty and the Beast'], clue: 'A mute woman falls for an amphibious creature.' },
+                    { image: 'level2/103.jpg', name: 'parasite', challenge: 'Normal', alts: ['Burning', 'The Handmaiden', 'Snowpiercer'], clue: 'A poor family infiltrates a wealthy household.' },
+                    { image: 'level2/104.jpg', name: 'memento', challenge: 'Normal', alts: ['Shutter Island', 'The Prestige', 'Inception'], clue: 'A man with no short-term memory hunts his wife\'s killer.' },
+                    { image: 'level2/105.jpg', name: 'whiplash', challenge: 'Normal', alts: ['Black Swan', 'La La Land', 'Amadeus'], clue: 'A drummer bleeds for perfection under a brutal conductor.' },
+                    { image: 'level2/106.jpg', name: 'gladiator', challenge: 'Normal', alts: ['Braveheart', '300', 'Troy'], clue: 'A Roman general becomes a slave, then a colosseum legend.' },
+                    { image: 'level2/107.jpg', name: 'fight club', challenge: 'Normal', alts: ['American Psycho', 'The Machinist', 'Se7en'], clue: 'Underground boxing and soap-making anarchists.' }
 
                      ];
                 
@@ -1085,168 +1141,163 @@
                 }
             }
 
-            showBadge(grade) {
-                if (!grade) grade = 'unknown';
-                const badgePath = `badges/${grade.toLowerCase()}.png`;
+showBadge(grade) {
+    if (!grade) grade = 'unknown';
+    const badgePath = `badges/${grade.toLowerCase()}.png`;
 
-                const existingOverlay = document.getElementById('badgeOverlay');
-                if (existingOverlay) existingOverlay.remove();
+    const existingOverlay = document.getElementById('badgeOverlay');
+    if (existingOverlay) existingOverlay.remove();
 
-                const overlay = document.createElement('div');
-                overlay.id = 'badgeOverlay';
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100vw';
-                overlay.style.height = '100vh';
-                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-                overlay.style.display = 'flex';
-                overlay.style.flexDirection = 'column';
-                overlay.style.justifyContent = 'center';
-                overlay.style.alignItems = 'center';
-                overlay.style.zIndex = '999999';
-                overlay.style.color = 'white';
-                overlay.style.textAlign = 'center';
-                overlay.style.padding = '20px';
+    const overlay = document.createElement('div');
+    overlay.id = 'badgeOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '999999';
+    overlay.style.color = 'white';
+    overlay.style.textAlign = 'center';
+    overlay.style.padding = '20px';
 
-                const title = document.createElement('h2');
-                title.textContent = '🎖️ You Earned a Badge!';
-                overlay.appendChild(title);
+    const title = document.createElement('h2');
+    title.textContent = '🎖️ You Earned a Badge!';
+    overlay.appendChild(title);
 
-                const badgeImg = document.createElement('img');
-                badgeImg.src = badgePath;
-                badgeImg.alt = `${grade} Badge`;
-                badgeImg.style.maxWidth = '80vw';
-                badgeImg.style.maxHeight = '50vh';
-                badgeImg.style.margin = '20px 0';
-                overlay.appendChild(badgeImg);
+    const badgeImg = document.createElement('img');
+    badgeImg.src = badgePath;
+    badgeImg.alt = `${grade} Badge`;
+    badgeImg.style.maxWidth = '80vw';
+    badgeImg.style.maxHeight = '50vh';
+    badgeImg.style.margin = '20px 0';
+    overlay.appendChild(badgeImg);
 
-                const gradeText = document.createElement('p');
-                gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
-                overlay.appendChild(gradeText);
+    const gradeText = document.createElement('p');
+    gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
+    overlay.appendChild(gradeText);
 
-                const btnContainer = document.createElement('div');
-                btnContainer.style.display = 'flex';
-                btnContainer.style.gap = '15px';
-                btnContainer.style.marginTop = '20px';
-                btnContainer.style.flexWrap = 'wrap';
-                btnContainer.style.justifyContent = 'center';
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '15px';
+    btnContainer.style.marginTop = '20px';
+    btnContainer.style.flexWrap = 'wrap';
+    btnContainer.style.justifyContent = 'center';
 
-                const mintBtn = document.createElement('button');
-                mintBtn.textContent = 'Mint';
-                mintBtn.style.padding = '12px 24px';
-                mintBtn.style.backgroundColor = '#28a745';
-                mintBtn.style.color = '#fff';
-                mintBtn.style.border = 'none';
-                mintBtn.style.borderRadius = '8px';
-                mintBtn.style.fontSize = '16px';
-                mintBtn.style.cursor = 'pointer';
+    const mintBtn = document.createElement('button');
+    mintBtn.textContent = 'Mint';
+    mintBtn.style.padding = '12px 24px';
+    mintBtn.style.backgroundColor = '#28a745';
+    mintBtn.style.color = '#fff';
+    mintBtn.style.border = 'none';
+    mintBtn.style.borderRadius = '8px';
+    mintBtn.style.fontSize = '16px';
+    mintBtn.style.cursor = 'pointer';
 
-                mintBtn.onclick = async () => {
-                    const walletAddress = this.playerAddress || '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
-                    const grade = this.getFinalGrade();
-                    const gradeToTokenId = {
-                        "A+": 5,
-                        "A": 4,
-                        "B+": 3,
-                        "B": 2,
-                        "C+": 1,
-                        "C": 1,
-                        "D": 0
-                    };
-                    const tokenId = gradeToTokenId[grade] ?? 0;
+    mintBtn.onclick = async () => {
+        const walletAddress = this.playerAddress || '0x52e9e3e548eA38E55bB32cD5f5E8cb7db6D062F3';
+        const grade = this.getFinalGrade();
+        const gradeToTokenId = {
+            "A+": 5,
+            "A": 4,
+            "B+": 3,
+            "B": 2,
+            "C+": 1,
+            "C": 1,
+            "D": 0
+        };
+        const tokenId = gradeToTokenId[grade] ?? 0;
 
-                    mintBtn.disabled = true;
-                    mintBtn.textContent = 'Minting... ⏳';
+        mintBtn.disabled = true;
+        mintBtn.textContent = 'Minting... ⏳';
 
-                    try {
-                        const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                address: walletAddress, 
-                                tokenId,
-                                quantity: 1 
-                            })
-                        });
+        try {
+            const res = await fetch('https://test-mint-stuff.vercel.app/api/mint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    address: walletAddress, 
+                    tokenId,
+                    quantity: 1 
+                })
+            });
 
-                        const data = await res.json();
+            const data = await res.json();
 
-                        if (res.ok && data.success) {
-                            badgeImg.style.display = 'none';
-                            mintBtn.style.display = 'none';
-                            title.textContent = '✅ Mint Successful!';
-                            gradeText.innerHTML = `<p style="font-size:11px; text-align:center;">Wallet: ${walletAddress}</p>`;
-                        } else {
-                            badgeImg.style.display = 'none';
-                            mintBtn.style.display = 'none';
-                            title.textContent = '❌ Mint Failed!';
-                            gradeText.innerHTML = `<p>${err.message}</p>`;
-                        }
-
-                    } catch (err) {
-                        console.error(err);
-                        this.messageBox.className = 'message-box incorrect';
-                        this.messageText.innerHTML = `
-                            <h2>❌ Mint Failed!</h2>
-                            <p>${err.message}</p>
-                        `;
-                        this.showOverlay();
-                    } finally {
-                        if (mintBtn.style.display !== 'none') {
-                            mintBtn.disabled = false;
-                            mintBtn.textContent = 'Mint';
-                        }
-                    }
-                };
-
-                const shareBtn = document.createElement('button');
-                shareBtn.textContent = 'Share';
-                shareBtn.style.padding = '12px 24px';
-                shareBtn.style.backgroundColor = '#1da1f2';
-                shareBtn.style.color = '#fff';
-                shareBtn.style.border = 'none';
-                shareBtn.style.borderRadius = '8px';
-                shareBtn.style.fontSize = '16px';
-                shareBtn.style.cursor = 'pointer';
-
-                shareBtn.onclick = () => {
-                    this.shareToFarcaster(grade);
-                };
-
-                const restartBtn = document.createElement('button');
-                restartBtn.textContent = 'Restart';
-                restartBtn.style.padding = '12px 24px';
-                restartBtn.style.backgroundColor = '#d4af37';
-                restartBtn.style.color = '#141414';
-                restartBtn.style.border = 'none';
-                restartBtn.style.borderRadius = '8px';
-                restartBtn.style.fontSize = '16px';
-                restartBtn.style.cursor = 'pointer';
-
-                restartBtn.onclick = async () => {
-                    restartBtn.disabled = true;
-                    await this.startNewGame(true);
-                    overlay.remove();
-                };
-
-                btnContainer.appendChild(mintBtn);
-                btnContainer.appendChild(shareBtn);
-                btnContainer.appendChild(restartBtn);
-                overlay.appendChild(btnContainer);
-
-                document.body.appendChild(overlay);
+            if (res.ok && data.success) {
+                badgeImg.style.display = 'none';
+                mintBtn.style.display = 'none';
+                title.textContent = '✅ Mint Successful!';
+                gradeText.innerHTML = `<p style="font-size:11px; text-align:center;">Wallet: ${walletAddress}</p>`;
+            } else {
+                badgeImg.style.display = 'none';
+                mintBtn.style.display = 'none';
+                title.textContent = '❌ Mint Failed!';
+                gradeText.innerHTML = `<p>${err.message}</p>`;
             }
 
-        shareToFarcaster(grade) {
-          const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-
-          if (window.shareToFarcaster) {
-            window.shareToFarcaster(grade, accuracy);
-          } else {
-            console.warn("⚠️ shareToFarcaster not available (probably not running in wrapper)");
-          }
+        } catch (err) {
+            console.error(err);
+            this.messageBox.className = 'message-box incorrect';
+            this.messageText.innerHTML = `
+                <h2>❌ Mint Failed!</h2>
+                <p>${err.message}</p>
+            `;
+            this.showOverlay();
+        } finally {
+            if (mintBtn.style.display !== 'none') {
+                mintBtn.disabled = false;
+                mintBtn.textContent = 'Mint';
+            }
         }
+    };
+
+    const shareBtn = document.createElement('button');
+    shareBtn.textContent = 'Share';
+    shareBtn.style.padding = '12px 24px';
+    shareBtn.style.backgroundColor = '#1da1f2';
+    shareBtn.style.color = '#fff';
+    shareBtn.style.border = 'none';
+    shareBtn.style.borderRadius = '8px';
+    shareBtn.style.fontSize = '16px';
+    shareBtn.style.cursor = 'pointer';
+
+    shareBtn.onclick = () => {
+      const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+      window.shareToFarcaster(grade, accuracy);
+    };
+
+    const restartBtn = document.createElement('button');
+    restartBtn.textContent = 'Restart';
+    restartBtn.style.padding = '12px 24px';
+    restartBtn.style.backgroundColor = '#d4af37';
+    restartBtn.style.color = '#141414';
+    restartBtn.style.border = 'none';
+    restartBtn.style.borderRadius = '8px';
+    restartBtn.style.fontSize = '16px';
+    restartBtn.style.cursor = 'pointer';
+
+    restartBtn.onclick = async () => {
+        restartBtn.disabled = true;
+        await this.startNewGame(true);
+        overlay.remove();
+    };
+
+    btnContainer.appendChild(mintBtn);
+    btnContainer.appendChild(shareBtn);
+    btnContainer.appendChild(restartBtn);
+    overlay.appendChild(btnContainer);
+
+    document.body.appendChild(overlay);
+} // ✅ this closes showBadge correctly
+
+
+
+
 
             
             addConfettiEffect() {
@@ -1303,11 +1354,56 @@
                 }, 2000);
             }
         }
+
+        // Global shareToFarcaster function (outside showBadge)
+        window.shareToFarcaster = async function (grade, accuracy) {
+          try {
+            await initializeFarcasterSDK(); // make sure SDK is ready
+
+            const text = `🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`;
+            const gameUrl = "https://cinema-quest-eosin.vercel.app/";
+
+            sdk.actions.composeCast({
+              text,
+              embeds: [gameUrl],
+            });
+          } catch (error) {
+            console.warn("⚠️ Farcaster SDK share failed, using Warpcast fallback:", error);
+
+            const baseUrl = "https://warpcast.com/~/compose";
+            const text = `🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`;
+            const gameUrl = "https://cinema-quest-eosin.vercel.app/";
+
+            const shareUrl =
+              baseUrl +
+              "?text=" +
+              encodeURIComponent(text) +
+              "&embeds[]=" +
+              encodeURIComponent(gameUrl);
+
+            const popup = window.open(shareUrl, "_blank", "width=600,height=700");
+            if (!popup || popup.closed || typeof popup.closed === "undefined") {
+              window.location.href = shareUrl;
+            }
+          }
+        };
         
         // Start the game when page loads
         document.addEventListener('DOMContentLoaded', () => {
             window.game = new MovieGuessingGame();
         });
+
+        document.addEventListener("DOMContentLoaded", async () => {
+  console.log("✅ DOM loaded, sdk is:", typeof sdk);
+  try {
+    const context = await sdk.context;
+    console.log("🎯 Got Farcaster context:", context);
+    sdk.actions.ready({});
+  } catch (e) {
+    console.warn("⚠️ No Farcaster context (probably not in a Frame):", e);
+  }
+});
+
         
         // Enable audio context on first user interaction (required by browsers)
         document.addEventListener('click', function enableAudio() {
