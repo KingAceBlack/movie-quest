@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MOVIE QUEST</title>
-    <script src="https://unpkg.com/@farcaster/frame-sdk@0.13.1/dist/sdk.umd.js"></script>
+    
     <style>
         body {
             margin: 0;
@@ -1412,5 +1412,47 @@ showBadge(grade) {
             }
         }, { once: true });
     </script>
+
+<script type="module">
+  import sdk from "https://esm.sh/@farcaster/frame-sdk@0.13.1";
+
+  async function init() {
+    try {
+      const context = await sdk.context;
+      console.log("🎯 Farcaster context:", context);
+      sdk.actions.ready({});
+    } catch (err) {
+      console.error("⚠️ Farcaster SDK init failed:", err);
+    }
+  }
+
+  init();
+
+  // Expose share function globally
+  window.shareToFarcaster = async function (grade, accuracy) {
+    try {
+      const text = `🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`;
+      const gameUrl = "https://cinema-quest-eosin.vercel.app/";
+
+      sdk.actions.composeCast({
+        text,
+        embeds: [gameUrl],
+      });
+    } catch (error) {
+      console.warn("⚠️ Farcaster SDK share failed, fallback to Warpcast:", error);
+
+      const baseUrl = "https://warpcast.com/~/compose";
+      const shareUrl =
+        baseUrl +
+        "?text=" +
+        encodeURIComponent(`🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`) +
+        "&embeds[]=" +
+        encodeURIComponent("https://cinema-quest-eosin.vercel.app/");
+
+      window.open(shareUrl, "_blank", "width=600,height=700");
+    }
+  };
+</script>
+
 </body>
 </html>
