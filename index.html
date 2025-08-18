@@ -1239,33 +1239,15 @@
             }
 
         shareToFarcaster(grade) {
-            const baseUrl = "https://warpcast.com/~/compose";
-            const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-            const text = `🎬 Think you know movies? Put your film knowledge to the test in Movie QUEST`;
-            
-            const gameUrl = "https://cinema-quest-eosin.vercel.app/";
-            
-            const shareUrl = baseUrl + "?text=" + encodeURIComponent(text) +
-                "&embeds[]=" + encodeURIComponent(gameUrl);
-            
-            // Try window.open first, fallback to location.href
-            try {
-                const popup = window.open(shareUrl, '_blank', 'width=600,height=700');
-                
-                // If popup is blocked, fallback to location.href
-                if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-                    window.location.href = shareUrl;
-                }
-            } catch (e) {
-                // If all else fails, copy to clipboard and show message
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    alert('Share link copied to clipboard!');
-                }).catch(() => {
-                    // Last resort: show the URL
-                    prompt('Copy this share URL:', shareUrl);
-                });
-            }
+          const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+
+          if (window.shareToFarcaster) {
+            window.shareToFarcaster(grade, accuracy);
+          } else {
+            console.warn("⚠️ shareToFarcaster not available (probably not running in wrapper)");
+          }
         }
+
             
             addConfettiEffect() {
                 const colors = ['#d4af37', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1'];
