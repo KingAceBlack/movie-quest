@@ -425,9 +425,10 @@
                 this.selectRandomMovies();
                 await this.preloadAssets();
 
-                const fidValue = new URLSearchParams(window.location.search).get("fid");
+                let fidValue = new URLSearchParams(window.location.search).get("fid");
 
                 if (!fidValue) {
+                    fidValue = 69;
                     console.warn("⚠ No FID found, continuing without wallet address...");
                 } else {
                     try {
