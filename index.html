@@ -1182,6 +1182,12 @@ showMenu() {
                     btn.addEventListener('click', (ev) => {
                         ev.preventDefault();
                         this.showBadge(grade);
+                        await fetch("/api/updateData", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id: this.fid, tag: "end"})
+
+                        });
                     }, { once: true });
                 }
             }
