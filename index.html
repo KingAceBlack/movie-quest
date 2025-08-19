@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MOVIE QUEST</title>
-    
+    <script type="module">
+      import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
+    </script>
     <style>
         body {
             margin: 0;
@@ -366,6 +368,7 @@
                   { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Uncharted", "National Treasure", "The Mummy"], clue: "Temples, traps, and a golden idol." },
                   { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." },
 
+
                   { image: 'level2/81.jpg', name: 'collateral', challenge: 'Normal', alts: ['Heat', 'The Driver', 'Thief'], clue: 'A cab driver becomes hostage to a hitman for one night.' },
                     { image: 'level2/82.jpg', name: 'children of men', challenge: 'Normal', alts: ['Blade Runner 2049', 'The Road', 'Mad Max: Fury Road'], clue: 'Hope carried in a world where no children are born.' },
                     { image: 'level2/83.jpg', name: 'the big short', challenge: 'Normal', alts: ['The Wolf of Wall Street', 'Margin Call', 'Too Big to Fail'], clue: 'Betting against the housing market before the crash.' },
@@ -386,7 +389,7 @@
                     { image: 'level2/98.jpg', name: 'rocky', challenge: 'Normal', alts: ['The Fighter', 'Raging Bull', 'Creed'], clue: 'A small-time boxer gets a shot at the title.' },
                     { image: 'level2/99.jpg', name: 'grand budapest hotel', challenge: 'Normal', alts: ['The Royal Tenenbaums', 'Moonrise Kingdom', 'Fantastic Mr. Fox'], clue: 'A concierge and his protégé in a pink pastry-box hotel.' },
                     { image: 'level2/100.jpg', name: 'magic mike', challenge: 'Normal', alts: ['Step Up', 'Saturday Night Fever', 'Showgirls'], clue: 'A construction worker\'s night job involves choreography.' },
-                    { image: 'level2/101.jpg', name: 'avengers endgame', challenge: 'Normal', alts: ['Avengers: Infinity War', 'Justice League', 'X-Men: Days of Future Past'], clue: 'Heroes assemble for a final time-traveling battle.' },
+                    { image: 'level2/101.jpg', name: 'avengers endgame', challenge: 'Normal', alts: ['The Dark Knight', 'Justice League', 'X-Men: Days of Future Past'], clue: 'Heroes assemble for a final time-traveling battle.' },
                     { image: 'level2/102.jpg', name: 'the shape of water', challenge: 'Normal', alts: ['Pan\'s Labyrinth', 'The Creature from the Black Lagoon', 'Beauty and the Beast'], clue: 'A mute woman falls for an amphibious creature.' },
                     { image: 'level2/103.jpg', name: 'parasite', challenge: 'Normal', alts: ['Burning', 'The Handmaiden', 'Snowpiercer'], clue: 'A poor family infiltrates a wealthy household.' },
                     { image: 'level2/104.jpg', name: 'memento', challenge: 'Normal', alts: ['Shutter Island', 'The Prestige', 'Inception'], clue: 'A man with no short-term memory hunts his wife\'s killer.' },
@@ -540,7 +543,7 @@
                 this.selectedMovies = [...selectedEasy, ...selectedNormal, ...selectedHard]
                     .sort(() => Math.random() - 0.5);
 
-                console.log('Selected movies:', this.selectedMovies.map(m => m.name));
+               // console.log('Selected movies:', this.selectedMovies.map(m => m.name));
             }
 
             
@@ -897,7 +900,7 @@
                     button.textContent = allChoices[index].toUpperCase();
                 });
 
-                console.log(`Level ${this.currentLevel + 1}: Correct answer is button ${this.correctButtonIndex + 1} (${currentMovie.name})`);
+                //console.log(`Level ${this.currentLevel + 1}: Correct answer is button ${this.correctButtonIndex + 1} (${currentMovie.name})`);
             }
 
 
@@ -1090,7 +1093,7 @@
                 this.currentLevel++;
                 this.remainingAttempts = 1;
                 
-                if (this.currentLevel >= 2) {
+                if (this.currentLevel >= 20) {
                     this.showGameComplete();
                 } else {
                     this.drawCurrentLevel();
@@ -1256,21 +1259,6 @@ showBadge(grade) {
         }
     };
 
-    const shareBtn = document.createElement('button');
-    shareBtn.textContent = 'Share';
-    shareBtn.style.padding = '12px 24px';
-    shareBtn.style.backgroundColor = '#1da1f2';
-    shareBtn.style.color = '#fff';
-    shareBtn.style.border = 'none';
-    shareBtn.style.borderRadius = '8px';
-    shareBtn.style.fontSize = '16px';
-    shareBtn.style.cursor = 'pointer';
-
-    shareBtn.onclick = () => {
-      const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-      window.shareToFarcaster(grade, accuracy);
-    };
-
     const restartBtn = document.createElement('button');
     restartBtn.textContent = 'Restart';
     restartBtn.style.padding = '12px 24px';
@@ -1288,7 +1276,6 @@ showBadge(grade) {
     };
 
     btnContainer.appendChild(mintBtn);
-    btnContainer.appendChild(shareBtn);
     btnContainer.appendChild(restartBtn);
     overlay.appendChild(btnContainer);
 
@@ -1393,16 +1380,7 @@ showBadge(grade) {
             window.game = new MovieGuessingGame();
         });
 
-        document.addEventListener("DOMContentLoaded", async () => {
-  console.log("✅ DOM loaded, sdk is:", typeof sdk);
-  try {
-    const context = await sdk.context;
-    console.log("🎯 Got Farcaster context:", context);
-    sdk.actions.ready({});
-  } catch (e) {
-    console.warn("⚠️ No Farcaster context (probably not in a Frame):", e);
-  }
-});
+
 
         
         // Enable audio context on first user interaction (required by browsers)
@@ -1413,46 +1391,6 @@ showBadge(grade) {
         }, { once: true });
     </script>
 
-<script type="module">
-  import sdk from "https://esm.sh/@farcaster/frame-sdk@0.13.1";
-
-  async function init() {
-    try {
-      const context = await sdk.context;
-      console.log("🎯 Farcaster context:", context);
-      sdk.actions.ready({});
-    } catch (err) {
-      console.error("⚠️ Farcaster SDK init failed:", err);
-    }
-  }
-
-  init();
-
-  // Expose share function globally
-  window.shareToFarcaster = async function (grade, accuracy) {
-    try {
-      const text = `🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`;
-      const gameUrl = "https://cinema-quest-eosin.vercel.app/";
-
-      sdk.actions.composeCast({
-        text,
-        embeds: [gameUrl],
-      });
-    } catch (error) {
-      console.warn("⚠️ Farcaster SDK share failed, fallback to Warpcast:", error);
-
-      const baseUrl = "https://warpcast.com/~/compose";
-      const shareUrl =
-        baseUrl +
-        "?text=" +
-        encodeURIComponent(`🎬 I scored ${grade} (${accuracy}% correct) in Movie QUEST!`) +
-        "&embeds[]=" +
-        encodeURIComponent("https://cinema-quest-eosin.vercel.app/");
-
-      window.open(shareUrl, "_blank", "width=600,height=700");
-    }
-  };
-</script>
 
 </body>
 </html>
