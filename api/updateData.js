@@ -12,7 +12,7 @@ router.post("/updateData", async (req, res) => {
 
   
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/moviequest`, {
+    const response = await fetch(`${supabaseUrl}/rest/v1/walletaddys`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -20,7 +20,7 @@ router.post("/updateData", async (req, res) => {
         "Authorization": `Bearer ${supabaseKey}`,
         "Prefer": "return=representation"
       },
-      body: JSON.stringify({ id, tag })
+      body: JSON.stringify({ id})
     });
 
     const data = await response.json();
