@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${supabaseKey}`,
         Prefer: "return=representation",
       },
-      body: JSON.stringify({ fid, damage }),
+      body: JSON.stringify({ fid, tag }),
     });
 
     const data = await response.json();
