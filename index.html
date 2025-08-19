@@ -39,7 +39,7 @@
         #buttonContainer {
             position: absolute;
             left: 50%;
-            bottom: 15%;
+            bottom: 10%;
             transform: translateX(-50%);
             display: none;
             flex-wrap: wrap; /* allow wrapping */
@@ -311,7 +311,7 @@
                   { image: "level/20.jpg", name: "blade runner", challenge: "Normal", alts: ["Blade Runner 2049", "Ghost in the Shell", "Dark City"], clue: "Neon rain, off-world ads, and replicants." },
                   { image: "level/21.jpg", name: "when harry met sally", challenge: "Normal", alts: ["Sleepless in Seattle", "You’ve Got Mail", "Notting Hill"], clue: "Debating whether friends can stay just friends." },
                   { image: "level/22.jpg", name: "jurassic park", challenge: "Normal", alts: ["The Lost World: Jurassic Park", "King Kong", "Godzilla (1998)"], clue: "Water ripples in a cup before the thunderous step." },
-                  { image: "level/23.jpg", name: "top gun", challenge: "Easy", alts: ["Top Gun: Maverick", "Iron Eagle", "Days of Thunder"], clue: "Navy fighter school and a beach volleyball break." },
+                  { image: "level/23.jpg", name: "top gun", challenge: "Easy", alts: ["Independence day", "Iron Eagle", "Days of Thunder"], clue: "Navy fighter school and a beach volleyball break." },
                   { image: "level/24.jpg", name: "the shining", challenge: "Easy", alts: ["Doctor Sleep", "Rosemary’s Baby", "The Exorcist"], clue: "Overlook Hotel hallways, a tricycle, and Room 237." },
                   { image: "level/25.jpg", name: "et", challenge: "Easy", alts: ["Close Encounters of the Third Kind", "The Iron Giant", "Flight of the Navigator"], clue: "A bike silhouette crossing the moon." },
                   { image: "level/26.jpg", name: "indiana jones", challenge: "Easy", alts: ["The Mummy", "Romancing the Stone", "National Treasure"], clue: "Fedora, bullwhip, and a rolling boulder." },
@@ -462,52 +462,65 @@
 
 
 
-            showMenu() {
-                const menuOverlay = document.createElement('div');
-                menuOverlay.id = 'menuOverlay';
-                menuOverlay.style.position = 'fixed';
-                menuOverlay.style.top = '0';
-                menuOverlay.style.left = '0';
-                menuOverlay.style.width = '100%';
-                menuOverlay.style.height = '100%';
-                menuOverlay.style.background = '#000';
-                menuOverlay.style.display = 'flex';
-                menuOverlay.style.flexDirection = 'column';
-                menuOverlay.style.alignItems = 'center';
-                menuOverlay.style.justifyContent = 'center';
-                menuOverlay.style.zIndex = '9999';
-                menuOverlay.style.gap = '20px';
 
-                const menuImage = document.createElement('img');
-                menuImage.src = 'menu.jpg';
-                menuImage.alt = 'Game Menu';
-                menuImage.style.maxWidth = '90%';
-                menuImage.style.maxHeight = '70%';
-                menuImage.style.objectFit = 'contain';
-                menuImage.style.borderRadius = '12px';
-                menuImage.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
+showMenu() {
+  const menuOverlay = document.createElement('div');
+  menuOverlay.id = 'menuOverlay';
+  menuOverlay.style.position = 'fixed';
+  menuOverlay.style.top = '0';
+  menuOverlay.style.left = '0';
+  menuOverlay.style.width = '100%';
+  menuOverlay.style.height = '100%';
+  menuOverlay.style.background = '#000';
+  menuOverlay.style.display = 'flex';
+  menuOverlay.style.flexDirection = 'column';
+  menuOverlay.style.alignItems = 'center';
+  menuOverlay.style.justifyContent = 'center';
+  menuOverlay.style.zIndex = '9999';
+  menuOverlay.style.gap = '20px';
 
-                const playBtn = document.createElement('button');
-                playBtn.textContent = 'PLAY';
-                playBtn.style.padding = '15px 30px';
-                playBtn.style.fontSize = '24px';
-                playBtn.style.fontWeight = 'bold';
-                playBtn.style.backgroundColor = '#d4af37';
-                playBtn.style.color = '#141414';
-                playBtn.style.border = 'none';
-                playBtn.style.borderRadius = '10px';
-                playBtn.style.cursor = 'pointer';
-                playBtn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.4)';
+  const menuImage = document.createElement('img');
+  menuImage.src = 'menu.jpg';
+  menuImage.alt = 'Game Menu';
+  menuImage.style.maxWidth = '90%';
+  menuImage.style.maxHeight = '70%';
+  menuImage.style.objectFit = 'contain';
+  menuImage.style.borderRadius = '12px';
+  menuImage.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
 
-                playBtn.addEventListener('click', () => {
-                    menuOverlay.remove();
-                    this.showRules();
-                });
+  const playBtn = document.createElement('button');
+  playBtn.textContent = 'PLAY';
+  playBtn.style.padding = '15px 30px';
+  playBtn.style.fontSize = '24px';
+  playBtn.style.fontWeight = 'bold';
+  playBtn.style.backgroundColor = '#d4af37';
+  playBtn.style.color = '#141414';
+  playBtn.style.border = 'none';
+  playBtn.style.borderRadius = '10px';
+  playBtn.style.cursor = 'pointer';
+  playBtn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.4)';
 
-                menuOverlay.appendChild(menuImage);
-                menuOverlay.appendChild(playBtn);
-                document.body.appendChild(menuOverlay);
-            }
+  // ✅ make callback async so we can await
+  playBtn.addEventListener('click', async () => {
+    menuOverlay.remove();
+    this.showRules();
+
+    // Example: call updateData with fid + damage
+ 
+    await fetch("/api/updateData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: 100, tag: "start" })
+
+    });
+
+  });
+
+  menuOverlay.appendChild(menuImage);
+  menuOverlay.appendChild(playBtn);
+  document.body.appendChild(menuOverlay);
+}
+
             
             selectRandomMovies() {
                 const getRandomSubset = (arr, count) => {
@@ -765,14 +778,33 @@
             
             calculateScore(timeToAnswer, attempts, isCorrect) {
                 if (!isCorrect) return 0;
-                
+
                 let basePoints = 1000;
+
+                // Base time bonus (still decreases linearly)
                 const timeBonus = Math.max(0, Math.floor((30 - timeToAnswer) * 10));
+
+                // Stricter punishment if answer takes more than 5 seconds
+                let timePenaltyMultiplier;
+                if (timeToAnswer <= 3) {
+                    timePenaltyMultiplier = 1.0; // no penalty
+                } else if (timeToAnswer <= 10) {
+                    timePenaltyMultiplier = 0.8; // mild penalty
+                } else if (timeToAnswer <= 20) {
+                    timePenaltyMultiplier = 0.6; // heavier penalty
+                } else {
+                    timePenaltyMultiplier = 0.4; // severe penalty
+                }
+
+                // Attempt multiplier (as before)
                 const attemptMultiplier = attempts === 1 ? 1.0 : attempts === 2 ? 0.7 : 0.4;
-                const levelScore = Math.floor((basePoints + timeBonus) * attemptMultiplier);
-                
-                return Math.max(100, levelScore);
+
+                // Final score calculation
+                const levelScore = Math.floor((basePoints + timeBonus) * attemptMultiplier * timePenaltyMultiplier);
+
+                return Math.max(100, levelScore); // never below 100 if correct
             }
+
             
             updateScore(points) {
                 this.score += points;
@@ -830,6 +862,9 @@
                 gradient.addColorStop(1, '#1a1a1a');
                 this.ctx.fillStyle = gradient;
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.textAlign = "center";
+                this.ctx.textBaseline = "middle";
+
 
                 if (this.currentLevel < this.selectedMovies.length) {
                     const movie = this.selectedMovies[this.currentLevel];
@@ -870,7 +905,7 @@
                         this.ctx.fillStyle = '#d4af37';
                         this.ctx.font = 'bold 32px Georgia, serif';
                         this.ctx.textAlign = 'center';
-                        this.ctx.fillText(`Level ${this.currentLevel + 1} of ${this.totalRounds}`, canvasWidth / 2, 80);
+                        this.ctx.fillText(`Level ${this.currentLevel + 1} of ${this.totalRounds}`, canvasWidth / 2, 70);
 
                         this.ctx.strokeStyle = '#d4af37';
                         this.ctx.lineWidth = 3;
@@ -879,7 +914,7 @@
                         this.ctx.fillStyle = '#ffffff';
                         this.ctx.font = 'bold 28px Arial';
                         this.ctx.textAlign = 'right';
-                        this.ctx.fillText(`⏳ ${this.timeRemaining}s`, canvasWidth - 50, 80);
+                        this.ctx.fillText(`⏳ ${this.timeRemaining}s`, canvasWidth - 50, 70);
                     }
                 }
                 
@@ -931,7 +966,7 @@
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.font = 'bold 28px Arial';
                 this.ctx.textAlign = 'right';
-                this.ctx.fillText(`⏳ ${this.timeRemaining}s`, canvasWidth - 50, 80);
+                this.ctx.fillText(`⏳ ${this.timeRemaining}s`, canvasWidth - 50, 70);
             }
 
             showTimeOverMessage() {
@@ -969,17 +1004,22 @@
                 });
             }
             
-            hideButtons() {
-                this.choiceButtons.forEach((button, index) => {
+           hideButtons() {
+                this.choiceButtons.forEach((button) => {
+                    // Animate out
                     button.style.transition = 'all 0.3s ease';
                     button.style.transform = 'translateY(20px)';
                     button.style.opacity = '0';
+
+                    // Reset any leftover highlights
+                    button.classList.remove('correct-answer', 'wrong-answer');
                 });
-                
+
                 setTimeout(() => {
                     this.buttonContainer.style.display = 'none';
                 }, 300);
             }
+
 
             handleButtonClick(buttonIndex) {
                 if (this.buttonsDisabled || !this.isGameActive) return;
@@ -1093,11 +1133,11 @@
                 this.currentLevel++;
                 this.remainingAttempts = 1;
                 
-                if (this.currentLevel >= 20) {
+                if (this.currentLevel >= 1) {
                     this.showGameComplete();
                 } else {
                     this.drawCurrentLevel();
-                    setTimeout(() => this.showButtons(), 1000);
+                    setTimeout(() => this.showButtons(), 100);
                 }
             }
             
@@ -1152,37 +1192,44 @@ showBadge(grade) {
     if (existingOverlay) existingOverlay.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'badgeOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '999999';
-    overlay.style.color = 'white';
-    overlay.style.textAlign = 'center';
-    overlay.style.padding = '20px';
+overlay.id = 'badgeOverlay';
+overlay.style.position = 'fixed';
+overlay.style.top = '0';
+overlay.style.left = '0';
+overlay.style.width = '100vw';
+overlay.style.height = '100vh';
+overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+overlay.style.display = 'flex';
+overlay.style.flexDirection = 'column';
+overlay.style.justifyContent = 'center'; // centers vertically
+overlay.style.alignItems = 'center';    // centers horizontally
+overlay.style.zIndex = '999999';
+overlay.style.color = 'white';
+overlay.style.textAlign = 'center';
+overlay.style.padding = '20px';
 
-    const title = document.createElement('h2');
-    title.textContent = '🎖️ You Earned a Badge!';
-    overlay.appendChild(title);
+const title = document.createElement('h2');
+title.textContent = '🎖️ You Earned a Badge!';
+// push down from the top (margin-top = 20px), keep small gap below (10px)
+title.style.margin = '20px 0 3px -30px'; 
+overlay.appendChild(title);
 
-    const badgeImg = document.createElement('img');
-    badgeImg.src = badgePath;
-    badgeImg.alt = `${grade} Badge`;
-    badgeImg.style.maxWidth = '80vw';
-    badgeImg.style.maxHeight = '50vh';
-    badgeImg.style.margin = '20px 0';
-    overlay.appendChild(badgeImg);
+const badgeImg = document.createElement('img');
+badgeImg.src = badgePath;
+badgeImg.alt = `${grade} Badge`;
+badgeImg.style.maxWidth = '80vw';
+badgeImg.style.maxHeight = '50vh';
+// small bottom space before grade text
+badgeImg.style.margin = '0 0 -5px -30px'; 
+overlay.appendChild(badgeImg);
 
-    const gradeText = document.createElement('p');
-    gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
-    overlay.appendChild(gradeText);
+const gradeText = document.createElement('p');
+gradeText.innerHTML = `Grade: <strong>${grade}</strong>`;
+// slightly upward pull, but less extreme
+gradeText.style.margin = '-20px 0 0 -30px'; 
+overlay.appendChild(gradeText);
+
+
 
     const btnContainer = document.createElement('div');
     btnContainer.style.display = 'flex';
@@ -1190,6 +1237,7 @@ showBadge(grade) {
     btnContainer.style.marginTop = '20px';
     btnContainer.style.flexWrap = 'wrap';
     btnContainer.style.justifyContent = 'center';
+    btnContainer.style.marginLeft = '-30px';
 
     const mintBtn = document.createElement('button');
     mintBtn.textContent = 'Mint';
@@ -1235,7 +1283,10 @@ showBadge(grade) {
                 badgeImg.style.display = 'none';
                 mintBtn.style.display = 'none';
                 title.textContent = '✅ Mint Successful!';
-                gradeText.innerHTML = `<p style="font-size:11px; text-align:center;">Wallet: ${walletAddress}</p>`;
+                title.style.marginBottom = '15px'; // tiny space below title
+
+                gradeText.innerHTML = `<p style="font-size:11px; text-align:center; margin-top:4px;">Wallet: ${walletAddress}</p>`;
+
             } else {
                 badgeImg.style.display = 'none';
                 mintBtn.style.display = 'none';
