@@ -510,7 +510,7 @@ showMenu() {
     await fetch("/api/updateData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: 100})
+      body: JSON.stringify({ id: 100, tag: "start"})
 
     });
 
