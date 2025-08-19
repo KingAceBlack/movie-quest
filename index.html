@@ -1143,54 +1143,59 @@ showMenu() {
                 }
             }
             
-            showGameComplete() {
-                if (typeof this.sounds.win === 'function') {
-                    this.sounds.win();
-                }
-                
-                const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
-                const grade = this.getFinalGrade();
-                
-                this.messageBox.className = 'message-box correct';
-                this.messageText.innerHTML = `
-                    <h2>🏆 Game Complete!</h2>
-                    <p>Final Score: <strong>${this.score.toLocaleString()}</strong></p>
-                    <p>Correct: ${this.correctAnswers}/${this.totalRounds} (${accuracy}%)</p>
-                    <p>Failed Levels: ${this.failedLevels}</p>
-                    <p>Grade: <strong>${grade}</strong></p>
-                    <button id="continueBtn" style="
-                        margin-top: 20px;
-                        padding: 10px 18px;
-                        background-color: #d4af37;
-                        border: none;
-                        border-radius: 8px;
-                        color: #141414;
-                        font-weight: bold;
-                        cursor: pointer;
-                        font-size: 16px;
-                    ">
-                        Continue
-                    </button>
-                `;
-                
-                this.showOverlay();
-                this.isGameActive = false;
-                this.addConfettiEffect();
+showGameComplete() {
+    if (typeof this.sounds.win === 'function') {
+        this.sounds.win();
+    }
 
-                const btn = document.getElementById('continueBtn');
-                if (btn) {
-                    btn.addEventListener('click', (ev) => {
-                        ev.preventDefault();
-                        this.showBadge(grade);
-                        await fetch("/api/updateData", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ id: this.fid, tag: "end"})
+    const accuracy = Math.round((this.correctAnswers / this.totalRounds) * 100);
+    const grade = this.getFinalGrade();
 
-                        });
-                    }, { once: true });
-                }
+    this.messageBox.className = 'message-box correct';
+    this.messageText.innerHTML = `
+        <h2>🏆 Game Complete!</h2>
+        <p>Final Score: <strong>${this.score.toLocaleString()}</strong></p>
+        <p>Correct: ${this.correctAnswers}/${this.totalRounds} (${accuracy}%)</p>
+        <p>Failed Levels: ${this.failedLevels}</p>
+        <p>Grade: <strong>${grade}</strong></p>
+        <button id="continueBtn" style="
+            margin-top: 20px;
+            padding: 10px 18px;
+            background-color: #d4af37;
+            border: none;
+            border-radius: 8px;
+            color: #141414;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        ">
+            Continue
+        </button>
+    `;
+
+    this.showOverlay();
+    this.isGameActive = false;
+    this.addConfettiEffect();
+
+    const btn = document.getElementById('continueBtn');
+    if (btn) {
+        btn.addEventListener('click', async (ev) => {   // ✅ make callback async
+            ev.preventDefault();
+            this.showBadge(grade);
+
+            try {
+                await fetch("/api/updateData", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: this.fid, tag: "end" }) // ✅ use stored fid
+                });
+            } catch (err) {
+                console.error("❌ Failed to update data:", err);
             }
+        }, { once: true });
+    }
+}
+
 
 showBadge(grade) {
     if (!grade) grade = 'unknown';
