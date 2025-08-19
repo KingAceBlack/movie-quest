@@ -430,6 +430,7 @@
                 if (!fidValue) {
                     fidValue = 69;
                     console.warn("⚠ No FID found, continuing without wallet address...");
+                    this.fid = fidValue; 
                 } else {
                     try {
                         const res = await fetch(`/api/getEthAddress?fid=${fidValue}`);
@@ -456,7 +457,7 @@
                     }
                 }
 
-
+                this.fid = fidValue; 
                 this.showMenu();
                 this.startAnimationLoop();
             }
@@ -511,7 +512,7 @@ showMenu() {
     await fetch("/api/updateData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: fidValue, tag: "start"})
+      body: JSON.stringify({ id: this.fid, tag: "start"})
 
     });
 
