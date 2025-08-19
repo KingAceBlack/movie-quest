@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${supabaseKey}`,
         Prefer: "return=representation",
       },
-      body: JSON.stringify({ fid, tag }),
+      body: JSON.stringify({ id, tag }),
     });
 
     const data = await response.json();
@@ -33,4 +33,5 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
+
 
