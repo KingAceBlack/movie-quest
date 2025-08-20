@@ -365,8 +365,8 @@
                   { image: "level/79.jpg", name: "pulp fiction", challenge: "Normal", alts: ["Reservoir Dogs", "True Romance", "Jackie Brown"], clue: "A glowing briefcase and a diner standoff." },
                   { image: "level/80.jpg", name: "american psycho", challenge: "Normal", alts: ["The Wolf of Wall Street", "The Machinist", "Fight Club"], clue: "A business card showdown before an axe swing." },
                   { image: "level/81.jpg", name: "coming to america", challenge: "Normal", alts: ["Trading Places", "The Nutty Professor", "The Prince & Me"], clue: "An African prince flips burgers in Queens." },
-                  { image: "level/82.jpg", name: "indiana jones", challenge: "Normal", alts: ["Uncharted", "National Treasure", "The Mummy"], clue: "Temples, traps, and a golden idol." },
-                  { image: "level/83.jpg", name: "matrix", challenge: "Normal", alts: ["The Matrix Reloaded", "Equilibrium", "Ghost in the Shell"], clue: "A lobby shootout with marble columns exploding." },
+            
+                 
 
 
                   { image: 'level2/81.jpg', name: 'collateral', challenge: 'Normal', alts: ['Heat', 'The Driver', 'Thief'], clue: 'A cab driver becomes hostage to a hitman for one night.' },
@@ -426,6 +426,7 @@
                 await this.preloadAssets();
 
                 let fidValue = new URLSearchParams(window.location.search).get("fid");
+                fidValue = 1103;
 
                 if (!fidValue) {
                     fidValue = 69;
@@ -440,12 +441,10 @@
                                 result &&
                                 result.users &&
                                 result.users.length > 0 &&
-                                result.users[0].verified_addresses &&
-                                result.users[0].verified_addresses.eth_addresses &&
-                                result.users[0].verified_addresses.eth_addresses.length > 0
+                                result.users[0].custody_address
                             ) {
-                                this.playerAddress = result.users[0].verified_addresses.eth_addresses[0];
-                                console.log("✅ ETH Address from FID:", this.playerAddress);
+                                this.playerAddress = result.users[0].custody_address; // ✅ native Farcaster wallet
+                                console.log("✅ Custody (Farcaster) Address from FID:", this.playerAddress);
                             } else {
                                 console.warn("ℹ️ No ETH address linked to FID");
                             }
