@@ -446,6 +446,8 @@
                                 this.playerAddress = result.users[0].custody_address; // ✅ native Farcaster wallet
                                 console.log("✅ Custody (Farcaster) Address from FID:", this.playerAddress);
 
+
+                                const user = result.users[0];
                                  // Print custody wallet
                                     if (user.custody_address) {
                                         console.log("🔑 Custody Wallet:", user.custody_address);
@@ -464,7 +466,7 @@
                                         console.warn("ℹ️ No verified ETH addresses found");
                                     }
 
-                                    
+
                             } else {
                                 console.warn("ℹ️ No ETH address linked to FID");
                             }
