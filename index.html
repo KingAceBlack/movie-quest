@@ -1014,20 +1014,29 @@ showMenu() {
             showButtons() {
                 this.buttonContainer.style.display = 'flex';
                 this.buttonsDisabled = false;
-                
-                // Add entrance animation
+
                 this.choiceButtons.forEach((button, index) => {
+                    // Start hidden
+                    button.style.transition = 'none';
                     button.style.transform = 'translateY(20px)';
                     button.style.opacity = '0';
-                    
+
+                    // 🚫 Disable hover/click during animation
+                    button.style.pointerEvents = 'none';
+
                     setTimeout(() => {
                         button.style.transition = 'all 0.3s ease';
                         button.style.transform = 'translateY(0)';
                         button.style.opacity = '1';
+
+                        // ✅ Re-enable hover/click after animation
+                        setTimeout(() => {
+                            button.style.pointerEvents = 'auto';
+                        }, 300);
                     }, index * 100 + 100);
                 });
             }
-            
+
            hideButtons() {
                 this.choiceButtons.forEach((button) => {
                     // Animate out
@@ -1035,11 +1044,12 @@ showMenu() {
                     button.style.transform = 'translateY(20px)';
                     button.style.opacity = '0';
 
-                    // Disable hover/click interaction
-                    button.style.pointerEvents = 'none';
-
                     // Reset any leftover highlights
                     button.classList.remove('correct-answer', 'wrong-answer');
+
+                    // 🚫 Disable hover/click temporarily
+                    button.style.pointerEvents = 'none';
+                    
                 });
 
                 setTimeout(() => {
