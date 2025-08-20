@@ -507,6 +507,15 @@ showMenu() {
     menuOverlay.remove();
     this.showRules();
 
+    if (this.sounds.bg) {
+        try {
+            await this.sounds.bg.play();
+            console.log("🎶 Background music started");
+        } catch (err) {
+            console.warn("⚠️ Background music blocked:", err);
+        }
+    }
+
     // Example: call updateData with fid + damage
  
     await fetch("/api/updateData", {
@@ -605,6 +614,19 @@ showMenu() {
                     
                     this.sounds.select = () => this.playTone(800, 0.1, 'sine');
                     this.sounds.win = () => this.playVictoryFanfare();
+
+                    // ✅ Background music
+                    this.sounds.bg = new Audio();
+                    this.sounds.bg.src = 'bg.mp3';   // make sure this path is correct
+                    this.sounds.bg.loop = true;              // loop background music
+                    this.sounds.bg.volume = 0.4;             // not too loud
+                    this.sounds.bg.onerror = () => console.log('Could not load background music');
+
+                    // Don’t autoplay yet (most browsers block it).
+                    // Start only after first user interaction (e.g., PLAY button).
+                    // Example: inside showMenu’s playBtn click → this.sounds.bg.play();
+
+
                     this.overlayTimer = null;
                     this.confettiTimer = null;
                     
