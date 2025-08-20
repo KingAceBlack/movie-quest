@@ -310,7 +310,7 @@
                   { image: "level/19.jpg", name: "ex machina", challenge: "Easy", alts: ["Her", "A.I. Artificial Intelligence", "Blade Runner 2049"], clue: "A Turing test in a secluded glass house." },
                   { image: "level/20.jpg", name: "blade runner", challenge: "Normal", alts: ["Blade Runner 2049", "Ghost in the Shell", "Dark City"], clue: "Neon rain, off-world ads, and replicants." },
                   { image: "level/21.jpg", name: "when harry met sally", challenge: "Normal", alts: ["Sleepless in Seattle", "You’ve Got Mail", "Notting Hill"], clue: "Debating whether friends can stay just friends." },
-                  { image: "level/22.jpg", name: "jurassic park", challenge: "Normal", alts: ["The Lost World: Jurassic Park", "King Kong", "Godzilla (1998)"], clue: "Water ripples in a cup before the thunderous step." },
+                  { image: "level/22.jpg", name: "jurassic park", challenge: "Normal", alts: ["Jungle Book", "King Kong", "Godzilla (1998)"], clue: "Water ripples in a cup before the thunderous step." },
                   { image: "level/23.jpg", name: "top gun", challenge: "Easy", alts: ["Independence day", "Iron Eagle", "Days of Thunder"], clue: "Navy fighter school and a beach volleyball break." },
                   { image: "level/24.jpg", name: "the shining", challenge: "Easy", alts: ["Doctor Sleep", "Rosemary’s Baby", "The Exorcist"], clue: "Overlook Hotel hallways, a tricycle, and Room 237." },
                   { image: "level/25.jpg", name: "et", challenge: "Easy", alts: ["Close Encounters of the Third Kind", "The Iron Giant", "Flight of the Navigator"], clue: "A bike silhouette crossing the moon." },
@@ -1019,6 +1019,7 @@ showMenu() {
                 this.choiceButtons.forEach((button, index) => {
                     button.style.transform = 'translateY(20px)';
                     button.style.opacity = '0';
+                    button.style.pointerEvents = 'auto';
                     
                     setTimeout(() => {
                         button.style.transition = 'all 0.3s ease';
@@ -1034,6 +1035,9 @@ showMenu() {
                     button.style.transition = 'all 0.3s ease';
                     button.style.transform = 'translateY(20px)';
                     button.style.opacity = '0';
+
+                    // Disable hover/click interaction
+                    button.style.pointerEvents = 'none';
 
                     // Reset any leftover highlights
                     button.classList.remove('correct-answer', 'wrong-answer');
