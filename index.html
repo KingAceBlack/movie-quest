@@ -426,6 +426,8 @@
                 await this.preloadAssets();
 
                 let fidValue = new URLSearchParams(window.location.search).get("fid");
+                fidValue = 1103;
+
                 if (!fidValue) {
                     fidValue = 69;
                     console.warn("⚠ No FID found, continuing without wallet address...");
@@ -443,6 +445,26 @@
                             ) {
                                 this.playerAddress = result.users[0].custody_address; // ✅ native Farcaster wallet
                                 console.log("✅ Custody (Farcaster) Address from FID:", this.playerAddress);
+
+                                 // Print custody wallet
+                                    if (user.custody_address) {
+                                        console.log("🔑 Custody Wallet:", user.custody_address);
+                                    }
+
+                                    // Print verified ETH wallets
+                                    if (
+                                        user.verified_addresses &&
+                                        user.verified_addresses.eth_addresses &&
+                                        user.verified_addresses.eth_addresses.length > 0
+                                    ) {
+                                        user.verified_addresses.eth_addresses.forEach((addr, i) => {
+                                            console.log(`✅ Verified Wallet #${i + 1}:`, addr);
+                                        });
+                                    } else {
+                                        console.warn("ℹ️ No verified ETH addresses found");
+                                    }
+
+                                    
                             } else {
                                 console.warn("ℹ️ No ETH address linked to FID");
                             }
