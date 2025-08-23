@@ -1387,7 +1387,7 @@ overlay.appendChild(gradeText);
     shareBtn.style.cursor = 'pointer';
 
     shareBtn.onclick = async () => {
-        const fidValue = this.fidValue || '213103';
+       
         
         shareBtn.disabled = true;
         shareBtn.textContent = 'Sharing... ⏳';
@@ -1398,7 +1398,7 @@ overlay.appendChild(gradeText);
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     message: "", 
-                    fid: fidValue 
+                    fid: this.fid 
                 })
             });
 
