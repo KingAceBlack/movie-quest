@@ -1376,6 +1376,53 @@ overlay.appendChild(gradeText);
         }
     };
 
+    const shareBtn = document.createElement('button');
+    shareBtn.textContent = 'Share';
+    shareBtn.style.padding = '12px 24px';
+    shareBtn.style.backgroundColor = '#007bff';
+    shareBtn.style.color = '#fff';
+    shareBtn.style.border = 'none';
+    shareBtn.style.borderRadius = '8px';
+    shareBtn.style.fontSize = '16px';
+    shareBtn.style.cursor = 'pointer';
+
+    shareBtn.onclick = async () => {
+        const fidValue = this.fidValue || '213103';
+        
+        shareBtn.disabled = true;
+        shareBtn.textContent = 'Sharing... ⏳';
+
+        try {
+            const res = await fetch('https://moviequest-production.up.railway.app/call-for-help', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: "", 
+                    fid: fidValue 
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                shareBtn.textContent = '✅ Shared!';
+            } else {
+                shareBtn.textContent = '❌ Share Failed';
+            }
+
+        } catch (err) {
+            console.error(err);
+            shareBtn.textContent = '❌ Share Failed';
+        } finally {
+            setTimeout(() => {
+                if (shareBtn.style.display !== 'none') {
+                    shareBtn.disabled = false;
+                    shareBtn.textContent = 'Share';
+                }
+            }, 2000);
+        }
+    };
+
     const restartBtn = document.createElement('button');
     restartBtn.textContent = 'Restart';
     restartBtn.style.padding = '12px 24px';
@@ -1393,6 +1440,7 @@ overlay.appendChild(gradeText);
     };
 
     btnContainer.appendChild(mintBtn);
+    btnContainer.appendChild(shareBtn);
     btnContainer.appendChild(restartBtn);
     overlay.appendChild(btnContainer);
 
